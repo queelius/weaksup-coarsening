@@ -13,7 +13,7 @@ would require live confirmation are marked [needs live search]. The prior-art
 freshness verdict is given with that caveat; a confirmatory WebSearch pass is
 recommended before submission for the items flagged below.
 
-## Field state of the art (label-model identifiability, 2016 to 2026)
+## Field map (label-model identifiability, 2016 to 2026)
 
 The label-model / weak-supervision lineage the paper engages is accurate and
 the principal nodes are present:
@@ -37,8 +37,8 @@ the principal nodes are present:
   (2017 structure learning; 2019 DryBell), Sala et al. (2019), Shin et al.
   (2022), Boecking et al. (2021).
 
-This is a representative and reasonably current citation set for the label-model
-identifiability question through about 2022.
+This is a representative citation set for the label-model identifiability
+question through about 2022.
 
 ## Candidate missing references (ranked)
 
@@ -57,9 +57,9 @@ identifiability question through about 2022.
    is explicitly a re-derivation.
 
 2. **WRENCH successors / 2022 to 2026 label-model work.** [needs live search]
-   The paper cites WRENCH (2021) and the 2022 survey as the most recent
-   benchmark/state-of-the-art nodes. If any materially newer label-model method
-   or benchmark exists (2023 to 2026), the simulation-only validation and the
+   The paper cites WRENCH (2021) and the 2022 survey as its most recent
+   benchmark and survey nodes. If a materially newer label-model method or
+   benchmark exists (2023 to 2026), the simulation-only validation and the
    "left to the longer manuscript" WRENCH deferral would be read against it. The
    area chair cannot confirm or deny specific 2023 to 2026 entries without live
    search. RECOMMENDATION: run a WebSearch for "weak supervision label model
@@ -83,7 +83,7 @@ or crowdsourcing as coarsening-at-random (Heitjan-Rubin C1-C2-C3) or as
 masked-cause series-system inference. The crowdsourcing literature uses the
 confusion-matrix / one-coin formalism, and weak supervision uses the
 factor-graph / moment formalism; neither uses the coarse-data vocabulary. The
-unification claim therefore appears genuinely novel as a FRAMING contribution.
+unification claim therefore appears original as a FRAMING contribution.
 [needs live search to fully rule out an obscure precedent, but the framing is
 plausibly original.]
 
