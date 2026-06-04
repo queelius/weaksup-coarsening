@@ -1,0 +1,44 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+Programmatic weak supervision fits a label model from noisy labeling
+functions, ideally without gold-labeled data. The central question,
+when the true labels can be recovered from LF votes alone, is the
+masked-cause identifiability problem from reliability statistics: the
+true label is the latent cause, the labels consistent with the LF
+votes are the candidate set, an LF abstention is a non-informative
+candidate set, a confident vote is a narrowed one, and a gold-labeled
+example is a singleton candidate set. We proved (i) a glass-ceiling
+theorem, with an exact accuracy-complement symmetry, showing that
+gold-free estimation cannot orient the label model without a
+structural assumption; (ii) an identifiability theorem recovering the
+Dawid--Skene, data-programming, and triplet-method result as a
+masked-cause statement under conditional independence; (iii) an
+agreement-consistency theorem showing the fitted model reproduces
+empirical pairwise LF agreement rates exactly at an interior MLE; and
+(iv) a gold-set sample-complexity bound, $\Theta(r / \mathrm{gap}^2)$
+for total (L2) model recovery in the parameter-degeneracy dimension
+induced by LF dependence and the accuracy margin, for restoring
+identifiability when LFs are correlated. A base-R
+simulation confirmed all four: the symmetry is exact, gold-free
+recovery under conditional independence reaches the oracle ceiling,
+the agreement residual is Monte-Carlo noise, and the gold-set
+requirement scales as $1/\mathrm{gap}^2$ with fitted log--log slope
+$-2.04$.
+
+Dawid--Skene (1979) is the clear ancestor of the label model, and
+moment-based identifiability for conditionally independent LFs is
+established prior work; the contribution here is the masked-cause
+unification, the C1--C2--C3 classification of LF ensembles, the
+explicit glass-ceiling construction, and the sample-complexity result
+for the dependent case. The framework gives a practitioner a
+diagnostic: a gold-free pipeline is sound when the LF ensemble
+satisfies the coarsening-at-random conditions, and the gold budget
+needed otherwise is set by the rank deficit and the accuracy margin.
+
+The principal open extensions are the multiclass and structured-output
+theorems, data-driven recovery of the LF dependency graph,
+label-dependent abstention via the C2-relaxation results of
+\citet{towell2026mdrelax}, and a head-to-head study against the
+Snorkel and FlyingSquid implementations on the WRENCH benchmark.
+Each is a natural follow-up.

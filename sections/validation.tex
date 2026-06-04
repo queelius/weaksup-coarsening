@@ -1,0 +1,194 @@
+\section{Validation}
+\label{sec:validation}
+
+We validate the four theorems on simulated weak-supervision data with
+known ground-truth labels and LF parameters. All results are
+reproducible from \texttt{scripts/run.R} (seed \texttt{20260521}),
+which sources the data-generating process and estimators in
+\texttt{scripts/sim.R}; the study uses base R only.
+
+\subsection{Data-generating process}
+
+The true label $Y \in \{0,1\}$ is drawn with prior $\pi$. Each
+labeling function $j$ has coverage $\beta_j$ (probability it does not
+abstain) and accuracy $\alpha_j$ (probability it votes $Y$ given that
+it votes). LF $j$ votes correctly iff a latent Gaussian score
+$g_j$ falls below the $\alpha_j$ quantile, which fixes the marginal
+correctness probability at $\alpha_j$ exactly. For conditionally
+independent LFs the scores are independent. For a dependent pair the
+two scores share a common latent factor with weight
+$\rho = \mathrm{dep}$, so the pair's errors are positively
+correlated while each LF keeps its marginal accuracy
+(the construction is marginal-preserving). This
+construction breaks the rank-one agreement structure that T2 relies
+on without changing what a gold-labeled example observes. As
+\cref{rmk:marginal-dgps} formalizes, the proof of \cref{thm:goldset}
+uses only the marginal accuracy of each LF (the Bernoulli step in
+the gold-augmented estimator), so any marginal-preserving dependence
+mechanism, Gaussian copula, logistic shared noise, or direct
+$E$-matrix perturbation, gives the same gap-dependence; the
+empirical slope reported below confirms the bound for the
+Gaussian-copula construction. Three
+estimators are used: the gold-free label model (closed-form triplet
+method of moments on pairwise and triple agreement rates, then the
+naive-Bayes posterior $\Prob\{Y \mid \bm{\lambda}\}$); the
+gold-augmented model (LF accuracies pinned directly from
+$m_{\mathrm{gold}}$ gold-labeled examples); and the oracle (true
+$Y$).
+
+\subsection{Glass ceiling (\cref{thm:glass-ceiling})}
+
+We generate five conditionally independent LFs ($\bm{\alpha} =
+(0.85, 0.78, 0.72, 0.68, 0.90)$, coverage $0.7$, prior $\pi = 0.4$)
+and enumerate all $3^5 = 243$ vote patterns over $\{0, 1,
+\text{abstain}\}$. For each pattern we compute the probability under
+the true parameter set, solution A $= (\pi, \bm{\alpha})$, and the
+flipped set, solution B $= (1 - \pi, \1 - \bm{\alpha})$. The two
+solutions produce identical pattern probabilities: the maximum
+absolute difference $\max_{\bm{\lambda}} |\Prob_A\{\bm{\lambda}\} -
+\Prob_B\{\bm{\lambda}\}|$ is $0$ to floating-point precision (not
+small, exactly zero). Both solutions fit the empirical vote
+distribution from $200{,}000$ examples equally well, each with $L_1$
+distance $0.0257$ to the empirical distribution. The
+accuracy-complement symmetry of \cref{thm:glass-ceiling} is therefore
+exact: an estimator that uses only LF votes cannot orient the label
+model. The gold-free triplet method recovers the unsigned margins
+$|a_j|$ and, with the better-than-random orientation assumption
+supplied, lands on solution A: estimated accuracies $(0.851, 0.777,
+0.722, 0.682, 0.899)$ against the truth $(0.85, 0.78, 0.72, 0.68,
+0.90)$, and $\hat\pi = 0.400$. Without that assumption solution B is
+equally admissible.
+
+\subsection{Identifiability under conditional independence
+(\cref{thm:ci-identifiability})}
+
+We generate five conditionally independent LFs ($\bm{\alpha} =
+(0.82, 0.75, 0.70, 0.88, 0.66)$, mixed coverage, $\pi = 0.45$) and
+sweep the number of examples $n$ over $\{500, \ldots, 50{,}000\}$,
+$30$ replicates per setting. The gold-free triplet estimator recovers
+the LF accuracies with median RMSE falling from $0.046$ at $n = 500$
+to $0.0044$ at $n = 50{,}000$ (\Cref{fig:identifiability}A); the
+log--log slope of RMSE against $n$ is $-0.53$, consistent with the
+$n^{-1/2}$ rate of a method-of-moments estimator. The class prior is
+recovered with median absolute error falling from $0.028$ to
+$0.0025$ over the same range. True-label recovery accuracy from the
+gold-free posterior reaches $0.871$, statistically indistinguishable
+from the oracle ceiling of $0.872$ (\Cref{fig:identifiability}B). The
+gold-free label model is identifiable under conditional independence
+and converges to the oracle, as \cref{thm:ci-identifiability}
+predicts.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{identifiability_recovery.pdf}
+\caption{Gold-free recovery under conditional independence
+(\cref{thm:ci-identifiability}), $30$ replicates per setting. (A)
+LF-accuracy RMSE decreases at the $n^{-1/2}$ rate (fitted log--log
+slope $-0.53$). (B) True-label recovery accuracy converges to the
+oracle ceiling (dashed). No gold-labeled examples are used.}
+\label{fig:identifiability}
+\end{figure}
+
+\subsection{Agreement consistency (\cref{thm:agreement-consistency})}
+
+We generate five conditionally independent LFs ($\bm{\alpha} =
+(0.80, 0.74, 0.71, 0.86, 0.69)$, coverage $0.75$, $\pi = 0.5$) and
+measure the residual between the model-implied and the empirical
+pairwise LF agreement rates. At $n = 500{,}000$ the gold-free fit has
+maximum absolute agreement residual $3.0 \times 10^{-3}$ across all
+LF pairs (median $1.9 \times 10^{-4}$); the oracle fit, which uses
+the true accuracies, has maximum residual $1.9 \times 10^{-3}$. The
+small residual is Monte-Carlo noise, not structural error: over a
+finite-$n$ sweep ($25$ replicates per setting) the median absolute
+residual falls monotonically from $9.3 \times 10^{-3}$ at $n = 500$
+to $7.1 \times 10^{-4}$ at $n = 100{,}000$, tracking the $n^{-1/2}$
+sampling rate. The fitted label model reproduces the empirical
+pairwise agreement rates, confirming \cref{thm:agreement-consistency}.
+The practical consequence stands: a model can match every observed
+agreement rate and still carry biased accuracies, so an agreement-fit
+check cannot diagnose accuracy bias.
+
+\subsection{Gold-set sample complexity (\cref{thm:goldset})}
+
+We generate eight LFs with modest accuracy margins ($\bm{\alpha} =
+(0.72, 0.70, 0.71, 0.69, 0.73, 0.68, 0.80, 0.78)$, coverage $0.8$,
+$\pi = 0.5$), with three dependent pairs $(1,2)$, $(3,4)$, $(5,6)$
+sharing latent factors and LFs $7, 8$ left as independent anchors.
+
+\paragraph{Dependence biases the gold-free model.} With independent
+LFs the gold-free triplet estimator has accuracy RMSE $0.0058$. With
+dependence at $\rho = 0.5$ the RMSE rises to $0.096$, a
+sixteen-fold increase. The agreement-matrix rank-deficit diagnostic,
+which compares the centered pairwise agreement matrix to its
+best rank-one fit $\bm{a}\bm{a}^\top$, reports effective deficit $0$
+for the independent ensemble and $6$ for the dependent ensemble: LF
+dependence destroys identifying directions, exactly the rank deficit
+$r$ of \cref{thm:goldset}.
+
+\paragraph{Gold labels restore identifiability.} Sweeping the
+gold-set size $m_{\mathrm{gold}}$ at fixed dependence $\rho = 0.5$
+($40$ replicates per setting), the gold-augmented label model's
+accuracy RMSE falls monotonically from $0.096$ (gold-free) to
+$0.048$ at $m_{\mathrm{gold}} = 100$, $0.036$ at $200$, and $0.017$
+at $800$ (\Cref{fig:goldset}A). True-label recovery accuracy rises
+from $0.825$ to $0.878$ over the same range. A modest gold set buys
+back the identifiability that LF dependence removes.
+
+\paragraph{Sample complexity scales as $1/\mathrm{gap}^2$.} We hold
+the dependence structure fixed and vary the LF accuracy margin
+$\mathrm{gap}$, requiring the gold-set accuracy estimate to reach a
+precision proportional to $\mathrm{gap}$ (the separation between the
+near-degenerate solutions). The number of gold-labeled examples
+needed falls from $140$ at $\mathrm{gap} = 0.10$ to $70$ at $0.14$,
+$35$ at $0.20$, $18$ at $0.28$, and $8$ at $0.40$
+(\Cref{fig:goldset}B). The log--log slope of $m_{\mathrm{gold}}$
+against $\mathrm{gap}$ is $-2.04$, matching the $1/\mathrm{gap}^2$
+scaling of the bound \eqref{eq:goldset-bound} in
+\cref{thm:goldset}. Strong, confident LF ensembles are cheap to
+identify; ensembles of near-random LFs need quadratically more gold
+data.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{goldset_complexity.pdf}
+\caption{Gold-set sample complexity under LF dependence
+(\cref{thm:goldset}). (A) At fixed dependence $\rho = 0.5$, the
+gold-augmented label model's accuracy RMSE falls from the gold-free
+value (open circle) toward the no-dependence floor (dashed) as the
+gold set grows. (B) The number of gold-labeled examples needed
+scales as $1/\mathrm{gap}^2$ in the LF accuracy margin (fitted
+log--log slope $-2.04$).}
+\label{fig:goldset}
+\end{figure}
+
+\paragraph{On the rank deficit.} The agreement-residual diagnostic and
+the relative residual of the rank-one fit both grow monotonically with
+the dependence strength $\rho$ (relative residual $0.08$ at $\rho =
+0.1$, rising to $0.47$ at $\rho = 0.6$), and the gold-free bias tracks
+them. The diagnostic reports an effective deficit of $6$ for the three
+dependent pairs, which is the residual-matrix rank $2 d_{\mathrm{free}}$
+of \cref{rmk:r-definition}; the parameter-degeneracy dimension is
+$d_{\mathrm{free}} = 3$, one per dependent pair. The simple
+gold-augmented estimator used here is the \emph{direct-marginal}
+estimator: it re-measures all $m$ marginal LF accuracies from gold and
+discards the agreement moments, so its cost is governed by the
+$\mathrm{gap}$ term and is independent of $r$ (a union over $m$ LFs
+gives $\Theta(\log m/\mathrm{gap}^2)$, with $m = 8$ fixed here). The
+linear-in-$r$ rate $\Theta(r/\mathrm{gap}^2)$ of \cref{thm:goldset}
+pertains instead to the hybrid estimator that uses the agreement
+moments for the identified subspace and gold only for the $r$
+degenerate directions; this study fixes the dependence structure and
+sweeps $\mathrm{gap}$, so it isolates the $1/\mathrm{gap}^2$ factor
+common to both estimators and does not exercise the $r$-channel (an
+$r$-sweep with the hybrid estimator is deferred to the longer manuscript
+\citep{towell2026weaksupcoarseningextended}). The two checkable
+predictions of \cref{thm:goldset}, that gold labels restore
+identifiability and that the cost scales as $1/\mathrm{gap}^2$, both
+hold.
+
+Direct comparison with the Snorkel and FlyingSquid implementations
+on the WRENCH benchmark \citep{ratner2017snorkel,fu2020fast,
+zhang2021wrench} is left to the longer
+manuscript~\citep{towell2026weaksupcoarseningextended}; the framework applies
+to the LF-vote matrix that is the input of each method without
+modification.

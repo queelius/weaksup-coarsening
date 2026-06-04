@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: article
+title: "Programmatic weak supervision as masked-cause inference: identifiability of label models without gold data"
+authors:
+  - family-names: Towell
+    given-names: Alexander
+    email: lex@metafunctor.com
+    orcid: "https://orcid.org/0000-0001-6443-9897"
+    affiliation: "Southern Illinois University Edwardsville"
+abstract: >-
+  Programmatic weak supervision trains classifiers from multiple noisy
+  labeling functions instead of hand-labeled data. We show the central
+  inferential question (when the true labels can be recovered from labeling-
+  function votes alone) is a masked-data identifiability problem from
+  reliability statistics, with a gold-labeled example acting as a singleton
+  candidate set that restores identifiability. We establish a glass-ceiling
+  theorem on non-identifiability without gold labels, an identifiability
+  theorem recovering Dawid-Skene and data programming under conditional
+  independence, an agreement-consistency theorem analogous to cell-total
+  consistency, and a gold-set sample-complexity bound of order log(r)/gap^2
+  for the dependent case. Simulation confirms each theorem; the empirical
+  log-log slope of negative 2.04 matches the predicted scaling.
+keywords:
+  - masked data
+  - coarsening at random
+  - programmatic weak supervision
+  - Snorkel
+  - label model
+  - data programming
+  - Dawid-Skene
+  - identifiability
+license: CC-BY-4.0

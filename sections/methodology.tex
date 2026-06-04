@@ -1,0 +1,315 @@
+\section{Gold-set sample complexity under LF dependence}
+\label{sec:methodology}
+
+The identifiability theorem T2 (\cref{thm:ci-identifiability}) rests
+on conditional independence of the LFs. In practice LFs are
+correlated: they share tokens, share knowledge bases, or share model
+backbones. Correlated error breaks C2 (\cref{cond:c2}), the triplet
+moments \eqref{eq:id-triplet} pick up cross terms, and the gold-free
+label model is biased. This section quantifies the remedy. Gold
+labels are singleton candidate sets; we ask how many are needed to
+restore identifiability, and answer with a sample-complexity bound
+governed by the rank deficit the dependence induces and the LF
+accuracy margin.
+
+\subsection{Setup}
+
+Let $A \in \R^{m \times m}$ be the population matrix of centered
+pairwise LF agreements, $A_{jk} = \E[\sigma_j \sigma_k]$ for $j \neq
+k$. Under conditional independence (\cref{thm:ci-identifiability}),
+the off-diagonal of $A$ is rank one: $A_{jk} = a_j a_k$, the outer
+product $\bm{a}\bm{a}^\top$ of the accuracy-margin vector $\bm{a}$.
+That rank-one structure is precisely what makes
+\eqref{eq:id-solve} solvable from agreement moments alone.
+
+LF dependence perturbs $A$. Suppose a set of LF pairs shares latent
+noise, so that
+\begin{equation}
+  A = \bm{a}\bm{a}^\top + E,
+  \label{eq:meth-decomp}
+\end{equation}
+where $E$ is the symmetric, zero-diagonal dependence-induced
+correction. The quantity that governs the gold budget is not the rank
+of $E$ but the \emph{parameter-degeneracy dimension}
+\begin{equation}
+  r \;=\; d_{\mathrm{free}},
+  \label{eq:meth-dfree}
+\end{equation}
+the dimension of the affine family of margin vectors $\bm{a}$
+consistent with the gold-free agreement moments when the dependence
+support is unknown, equivalently the corank of the off-diagonal
+moment-map Jacobian as the low-rank correction $E$ ranges over its
+unknown support. For generic instances in the practical regime
+$r \ll m$ this degeneracy dimension equals the number of dependent
+directions of shared LF error: for pairwise dependence, $r$ is the
+number of dependent LF pairs. With $r > 0$ the off-diagonal of $A$ is
+no longer rank one, the triplet identities fail, and $(\bm{\alpha},
+\pi)$ is not identifiable from LF votes alone. This is the label-model
+analogue of a rank-deficient candidate-set matrix in \cref{thm:bg-id}:
+the dependence has destroyed $r$ identifying directions.
+
+\begin{remark}[The degeneracy dimension versus the residual-matrix rank]
+\label{rmk:r-definition}
+The parameter-degeneracy dimension $r = d_{\mathrm{free}}$ is the
+object that sets the rate, and it is not the same as the rank of the
+symmetric agreement-residual matrix $A - \hat{\bm{a}}\hat{\bm{a}}^\top$
+reported by a rank-one-fit diagnostic. For $K$ disjoint dependent LF
+pairs the residual matrix perturbs a symmetric $2 \times 2$ block per
+pair and so has rank $2K$, while the parameter degeneracy that gold
+must pin has dimension $K$. The residual-matrix rank is therefore
+twice the parameter-degeneracy dimension under pairwise dependence,
+$\mathrm{rank}(A - \hat{\bm{a}}\hat{\bm{a}}^\top) = 2 d_{\mathrm{free}}$;
+a practitioner reading $r$ off the residual-matrix rank must halve it.
+\end{remark}
+
+Define the \emph{accuracy margin} (or gap) of the ensemble as
+\begin{equation}
+  \mathrm{gap} = \min_j |2\alpha_j - 1| = \min_j |a_j|,
+  \label{eq:meth-gap}
+\end{equation}
+the smallest centered accuracy among the LFs. The gap measures how
+far the weakest LF is from a coin flip; it controls the
+signal-to-noise ratio of every agreement moment.
+
+\subsection{The sample-complexity bound}
+
+A gold-labeled example is a singleton candidate set: its label $Y_i$
+is known, so it directly observes the LF errors on that example,
+$\1\{\lambda_{ij} \neq Y_i\}$, for every LF that votes. A gold set of
+size $n_g$ supplies $n_g$ identifying rows. The question is how large
+$n_g$ must be to restore the $r$ directions that dependence destroyed.
+
+\begin{theorem}[Gold-set sample complexity, total model recovery]
+\label{thm:goldset}
+Let the LF agreement structure satisfy \eqref{eq:meth-decomp} with
+parameter-degeneracy dimension $r = d_{\mathrm{free}}$ as in
+\eqref{eq:meth-dfree}, and let the ensemble have accuracy margin
+$\mathrm{gap}$ as in \eqref{eq:meth-gap}. Suppose the gold-labeled
+examples are drawn i.i.d.\ from the same distribution, and fix the
+success criterion to be \emph{total model recovery in the Euclidean
+(L2) margin error}: the hybrid agreement-moment-plus-gold estimator
+$\hat{\bm{a}}$ should satisfy $\|\hat{\bm{a}} - \bm{a}\|_2 \le c_0\,
+\mathrm{gap}$, equivalently it should keep the downstream training-label
+posterior KL below a fixed budget (\cref{rmk:l2-loss}). Then there are
+constants $c, C$, depending only on the LF coverages and on bounded
+moments of the vote distribution, such that with
+\begin{equation}
+  n_g \;\ge\; \frac{C}{\mathrm{gap}^2}
+        \cdot \bigl(r + \log\tfrac{1}{\delta}\bigr)
+  \label{eq:goldset-bound}
+\end{equation}
+gold-labeled examples the label model $(\bm{\alpha}, \pi)$ is recovered
+to total accuracy $\|\hat{\bm{a}} - \bm{a}\|_2 \le c_0\,\mathrm{gap}$
+with probability at least $1 - \delta$, and this rate is minimax
+optimal in $r$ and $\mathrm{gap}$:
+\begin{equation}
+  n_g \;=\; \Omega\!\left(\frac{r}{\mathrm{gap}^2}\right)
+  \label{eq:goldset-lower}
+\end{equation}
+is necessary, so the gold-set sample complexity for total recovery is
+$\Theta(r/\mathrm{gap}^2)$, linear in the degeneracy dimension.
+Conversely, when $r = 0$ (conditionally independent LFs) no gold labels
+are required, recovering \cref{thm:ci-identifiability}.
+\end{theorem}
+
+\begin{proof}[Sketch]
+\emph{Gold is a full-vector diagonal measurement.} On a gold example
+$i$ with known label $Y_i$, the centered correctness statistic
+$\xi_{ij} = 2\cdot\1\{\lambda_{ij} = Y_i\} - 1 \in \{-1, +1\}$ has
+$\E[\xi_{ij} \mid \text{votes}] = a_j$ and variance $1 - a_j^2$, since
+$\1\{\lambda_{ij} = Y_i\}$ is Bernoulli$(\alpha_j)$ and $4
+\alpha_j(1-\alpha_j) = 1 - (2\alpha_j - 1)^2$. The gold sample mean
+$\bar{\bm{\xi}}$ is therefore an unbiased, sub-Gaussian estimate of the
+\emph{whole} margin vector $\bm{a}$ with diagonal covariance
+$\Sigma/n_g$, $\Sigma_{jj} = (1 - a_j^2)/\beta_j \le 1/\beta_{\min}$,
+where $\beta_{\min} = \min_j \beta_j > 0$ is the minimum coverage. The
+per-coordinate precision is set by the marginal accuracy alone and is
+indifferent to the dependence among LFs (the dependence enters only the
+off-diagonal of $\Sigma$).
+
+\emph{Reduction to the $r$-dimensional location model.} The plentiful
+unlabeled agreement moments fix $\bm{a}$ on the $(m-r)$-dimensional
+identified subspace; what gold must supply is the component of $\bm{a}$
+in the $r$-dimensional degenerate subspace $U = \mathrm{col}(B)$,
+$B^\top B = I_r$ (\cref{rmk:r-definition}). Projecting the gold mean
+onto $U$ leaves the $r$-dimensional sub-Gaussian location model:
+estimate $\bm\theta = B^\top \bm{a}$ from $n_g$ observations with mean
+$\bm\theta$ and covariance $(1/n_g)\, B^\top \Sigma B$, whose
+eigenvalues lie in $[\,(1-\mathrm{gap}^2)/\beta_{\max},\,
+1/\beta_{\min}\,] = \Theta(1)$. The relevant tolerance along $U$ is
+$\Theta(\mathrm{gap})$: the degenerate directions are precisely the
+ones the agreement moments leave open, and the competing solutions sit
+at separation proportional to $\mathrm{gap}$ (a small gap makes the
+near-degenerate solutions close, the same way a small singular value
+makes a rank condition fragile in \cref{thm:bg-id}).
+
+\emph{Upper bound (trace bound, linear in $r$).} Take $\hat{\bm{a}}$ to
+be the agreement fit on the identified subspace plus the projection $B
+B^\top \bar{\bm{\xi}}$ of the gold mean onto $U$. The agreement term
+vanishes with the unlabeled corpus, and the gold term has expected
+squared error
+\begin{equation}
+  \E\,\bigl\| B B^\top(\bar{\bm{\xi}} - \bm{a}) \bigr\|_2^2
+   = \mathrm{trace}\!\bigl( (1/n_g)\, B^\top \Sigma B \bigr)
+   \;\le\; \frac{r}{n_g\, \beta_{\min}}.
+  \label{eq:trace-bound}
+\end{equation}
+The trace of the projected covariance is what makes the error
+\emph{linear in $r$}: each of the $r$ degenerate coordinates
+contributes $\Theta(1/n_g)$ to the total squared error. A sub-Gaussian
+chi-square (Bernstein / Hanson--Wright) tail
+\citep{wainwright2019high} sharpens the deviation to
+$\|B^\top(\bar{\bm{\xi}} - \bm{a})\|_2^2 \le C(r + \log(1/\delta))/(n_g
+\beta_{\min})$ with probability $1 - \delta$, so requiring this below
+$(c_0\,\mathrm{gap})^2$ gives \eqref{eq:goldset-bound}. No $\log r$
+factor appears: the trace bound targets the total L2 error directly,
+not each direction separately.
+
+\emph{Lower bound (Gaussian-location minimax).} Restricting to a
+sub-family with $E$ in a fixed $r$-dimensional subspace and $\bm{a}$
+ranging over the $r$-dimensional affine manifold embeds the
+$r$-dimensional Gaussian location model with per-coordinate variance
+$\ge c_0 = (1 - \mathrm{gap}^2)/\beta_{\max} > 0$ and $n_g$ samples
+inside the problem, so its minimax risk lower-bounds the full risk. The
+minimax L2 squared risk of the $r$-dimensional Gaussian location model
+is $\inf_{\hat{\bm{a}}}\sup_{\bm{a}} \E\|\hat{\bm{a}} - \bm{a}\|_2^2 \ge
+c_0\, r/n_g$ (the Bayes risk under an isotropic $N(0, \tau^2 I_r)$ prior
+tends to $c_0 r/n_g$ as $\tau \to \infty$ and lower-bounds the minimax
+risk; equivalently the Cram\'er--Rao bound with diagonal Fisher
+information $n_g/c_0$ per coordinate, \citealp{vandervaart1998asymptotic}).
+This is information-theoretic, hence binds every estimator, not just the
+hybrid one. Forcing the supremum risk below $(c_0\,\mathrm{gap})^2$
+requires $n_g \ge (c_0/c_0^2)\, r/\mathrm{gap}^2$, which is
+\eqref{eq:goldset-lower}. Together with the upper bound the gold-set
+sample complexity for total recovery is $\Theta(r/\mathrm{gap}^2)$.
+
+The reduction of the degenerate directions to the corank of the
+augmented moment map, and the regularity conditions on coverages and
+moments, follow the apparatus of \citet[\S 7]{towell2026masked}; the
+singleton-restores-rank step is the weak-supervision instance of the
+corresponding spike-in and single-cell-resolution results of
+\citet{towell2026scrnacoarsening,towell2026spatialcoarsening}.
+\end{proof}
+
+\begin{remark}[The L2 criterion is the operative one]
+\label{rmk:l2-loss}
+The success criterion in \cref{thm:goldset} is total L2 recovery
+because that is the loss the downstream training labels actually
+depend on. The naive-Bayes posterior log-odds is linear in $\bm{a}$,
+$\mathrm{logit}\,\Prob\{Y = 1 \mid \bm\lambda\} = \mathrm{logit}\,\pi
++ \sum_{j\text{ votes}} s_j\, w(a_j)$ with $w(a) = \log\frac{1+a}{1-a}$,
+so a margin perturbation $\bm{a} \to \bm{a} + d\bm{a}$ changes the
+expected KL of the perturbed training-label posterior from the true one
+by a positive-semidefinite quadratic form $d\bm{a}^\top G\, d\bm{a}$
+that is a coverage-weighted sum over LFs. Label quality is thus governed
+by the L2 (sum-of-squares) margin error and is invariant to how a fixed
+$\|d\bm{a}\|_2$ budget is spread across LFs. ``Restore the label model
+to fixed label quality'' is therefore the total/L2 criterion, and the
+operative gold-set rate is the linear-in-$r$ rate
+$\Theta(r/\mathrm{gap}^2)$ of \cref{thm:goldset}.
+\end{remark}
+
+\begin{remark}[The rate is loss-dependent: L2, $L_\infty$, and RMS]
+\label{rmk:r-dependence}
+The gold-set sample complexity differs by success criterion, and each
+rate is tight for its own loss; they are rates for different losses, not
+competing bounds on one quantity. For \emph{total} (L2) model recovery,
+$\|\hat{\bm{a}} - \bm{a}\|_2 \le c_0\,\mathrm{gap}$, the rate is
+$\Theta(r/\mathrm{gap}^2)$ (\cref{thm:goldset}): the trace bound
+\eqref{eq:trace-bound} makes the error linear in $r$ and the Gaussian
+location minimax bound \eqref{eq:goldset-lower} shows no estimator does
+better. For \emph{per-direction} ($L_\infty$) control, requiring every
+one of the $r$ degenerate directions below $c_1\,\mathrm{gap}$
+simultaneously, a per-direction Hoeffding bound and a union over the $r$
+directions give $2r\exp(-2 n_g \beta_{\min}(c_1\,\mathrm{gap})^2) \le
+\delta$, i.e.\
+\begin{equation}
+  n_g \;\ge\; \frac{1}{2 c_1^2 \beta_{\min}}
+        \cdot \frac{1}{\mathrm{gap}^2}\,\log\!\frac{2r}{\delta},
+  \label{eq:goldset-linf}
+\end{equation}
+the $\Theta(\log r/\mathrm{gap}^2)$ rate; the matching lower bound is
+the maximum of $r$ sub-Gaussian coordinates, $\sim \sqrt{2\log r}$, so
+the union bound is tight for the $L_\infty$ loss rather than loose. For
+\emph{per-coordinate} root-mean-square control, $\|\hat{\bm{a}} -
+\bm{a}\|_2/\sqrt{r} \le c_0\,\mathrm{gap}$, the $r$ in the trace bound
+cancels the $\sqrt{r}$ normalization and the rate is
+$\Theta(1/\mathrm{gap}^2)$, independent of $r$. The volume heuristic
+sometimes offered for the linear-$r$ rate (competing-solution volume
+$\sim \mathrm{gap}^r$, per-direction resolution
+$\mathrm{gap}/\sqrt{r}$, hence $n_g \sim r/\mathrm{gap}^2$) is exactly
+the L2 calculation \eqref{eq:trace-bound} and is the correct
+proof of the L2 rate, not a conjecture about a separate quantity.
+\end{remark}
+
+\begin{remark}[Marginal-preserving DGPs]
+\label{rmk:marginal-dgps}
+The Bernoulli step of the proof uses only the marginal accuracy
+$\alpha_j$ of each LF, not the dependence structure that couples LF
+errors. Any data-generating process that preserves the LF marginals
+(e.g., a Gaussian-copula shared-noise construction, a logistic
+shared-noise construction, or a direct $E$-matrix perturbation)
+produces the same gold-augmented Bernoulli draws and so satisfies the
+same bound \eqref{eq:goldset-bound} on $\mathrm{gap}$. The
+dependence mechanism enters \emph{only} through the rank deficit $r$,
+not through the gap factor.
+\end{remark}
+
+\subsection{Interpretation}
+
+\Cref{thm:goldset} makes the gold-free promise of weak supervision
+precise rather than absolute. Three regimes follow from
+\eqref{eq:goldset-bound}.
+
+\paragraph{Conditionally independent LFs ($r = 0$).} No gold labels
+are needed. The agreement moments alone identify the model, as T2
+states. This is the regime data programming was designed for.
+
+\paragraph{Mildly dependent LFs (small $r$).} A modest gold set
+suffices, and for total model recovery the requirement scales linearly
+in the number $r$ of independent shared-error directions
+(\cref{thm:goldset}): each degenerate direction adds a constant
+$\Theta(1/\mathrm{gap}^2)$ of gold. (\Cref{rmk:r-dependence} records
+that the weaker per-direction $L_\infty$ criterion scales only as
+$\log r$, and the per-coordinate RMS criterion is independent of $r$;
+the operative criterion for the training labels is the L2 one,
+\cref{rmk:l2-loss}.)
+
+\paragraph{Small accuracy margin (small $\mathrm{gap}$).} The gold
+requirement scales as $1/\mathrm{gap}^2$. An ensemble of LFs that are
+all close to random voting needs quadratically more gold data,
+because the near-degenerate solutions T1 leaves open are then close
+together and hard to separate. Strong, confident LFs are cheap to
+identify; weak ones are expensive.
+
+The bound is the operational form of ``singletons restore the rank
+that coarsening destroys.'' LF dependence is the coarsening pathology;
+gold-labeled examples are the singletons; the rank deficit $r$ and
+the gap $\mathrm{gap}$ together set the price.
+
+\paragraph{A budgeting procedure.} A practitioner can use
+\eqref{eq:goldset-bound} as a four-step rule:
+\begin{enumerate}[label=(\arabic*)]
+\item \emph{Pilot fit.} Fit a gold-free label model (triplet method
+  or EM) and read off pilot estimates $\hat{\bm{\alpha}}^{(0)}$ and
+  $\hat\pi^{(0)}$.
+\item \emph{Estimate the gap.} Set
+  $\widehat{\mathrm{gap}} = \min_j |2\hat\alpha_j^{(0)} - 1|$.
+\item \emph{Estimate the degeneracy dimension.} Compute the centered
+  pairwise LF agreement matrix $\hat A$ and its best rank-one fit
+  $\hat{\bm{a}}\hat{\bm{a}}^\top$, and count the singular values of the
+  residual $\hat A - \hat{\bm{a}}\hat{\bm{a}}^\top$ above a noise floor.
+  This count is the residual-matrix rank; by \cref{rmk:r-definition}
+  the parameter-degeneracy dimension under pairwise dependence is
+  \emph{half} of it, $\hat r = \tfrac{1}{2}\,\mathrm{rank}(\hat A -
+  \hat{\bm{a}}\hat{\bm{a}}^\top)$, so halve the count before
+  provisioning to avoid a factor-of-two overestimate.
+\item \emph{Provision.} Use \eqref{eq:goldset-bound} with the
+  plug-in $(\hat r, \widehat{\mathrm{gap}})$ to set the gold-set
+  budget $n_g$, which is linear in $\hat r$ for total recovery.
+\end{enumerate}
+
+The genuinely new content relative to data programming and the
+triplet method is this dependent-case budget: prior work establishes
+the $r = 0$ corner, and the framework extends it to the correlated
+ensembles that practice actually produces.

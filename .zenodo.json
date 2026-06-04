@@ -1,0 +1,29 @@
+{
+  "title": "Programmatic weak supervision as masked-cause inference: identifiability of label models without gold data",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "description": "<p>Programmatic weak supervision trains classifiers from multiple noisy labeling functions (LFs) instead of hand-labeled data. Frameworks such as data programming and Snorkel fit a label model that aggregates LF votes into probabilistic training labels, ideally without any gold-labeled examples. The central inferential question, when the true labels can be recovered from LF votes alone, is a masked-data identifiability problem from reliability statistics. We make this precise: the true label is the latent cause, the set of labels consistent with the LF votes is the candidate set, an LF abstention is a non-informative (full) candidate set, a confident LF vote is a narrowed candidate set, and a gold-labeled example is a singleton candidate set that restores identifiability.</p><p>We establish: (i) a glass-ceiling theorem showing that without gold labels and without a structural assumption on LF dependence, the LF accuracies and class prior are non-identifiable, via an explicit accuracy-complement symmetry construction; (ii) an identifiability theorem recovering the Dawid-Skene, data-programming, and triplet-method result as a masked-cause statement, under conditional independence of LFs given the label; (iii) an agreement-consistency theorem, the label-model analogue of cell-total consistency, showing the fitted model reproduces empirical pairwise LF agreement rates exactly at an interior MLE; and (iv) a gold-set sample-complexity bound of order log(r) / gap^2 in the rank deficit r induced by LF dependence and the accuracy margin, for restoring identifiability when LFs are correlated.</p><p>A base-R simulation confirms each theorem; the dependent-case bound is the genuinely new quantitative result, and the empirical log-log slope of negative 2.04 for the gold-set size against the accuracy margin matches the predicted 1 / gap^2 scaling. The framework casts the C1, C2, C3 coarsening conditions of Heitjan-Rubin and Gill-van der Laan-Robins as a classification of LF ensembles, and gives the precise conditions under which a gold-free weak-supervision pipeline is identifiable. Dawid-Skene (1979) is the clear ancestor of label-model identifiability, and moment-based identifiability under conditional independence is established prior work; the contribution here is the masked-cause unification, the C1, C2, C3 classification, the explicit glass-ceiling construction, and the gold-set sample-complexity theorem for the dependent case.</p>",
+  "version": "0.1.0",
+  "license": {
+    "id": "CC-BY-4.0"
+  },
+  "keywords": [
+    "masked-data inference",
+    "coarsening at random",
+    "identifiability",
+    "programmatic weak supervision",
+    "Snorkel",
+    "label model",
+    "data programming",
+    "Dawid-Skene",
+    "labeling functions",
+    "sample complexity"
+  ],
+  "creators": [
+    {
+      "name": "Towell, Alexander",
+      "orcid": "0000-0001-6443-9897",
+      "affiliation": "Southern Illinois University Edwardsville"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+\section{Discussion}
+\label{sec:discussion}
+
+This paper is one application of the masked-cause coarsening
+framework of \citet{towell2026masked}; the shared identifiability
+vocabulary is what the series argues for, and each application
+contributes a domain-specific construction (here, the glass-ceiling
+symmetry and the gold-set sample-complexity bound).
+
+\subsection{Relation to prior work on label-model identifiability}
+
+Label-model identifiability has a deep prior literature, and an
+honest account places this paper's contribution against it.
+
+\paragraph{Dawid--Skene is the ancestor.} \citet{dawid1979maximum}
+posed and solved the core problem: estimate per-rater error rates and
+a class prior, by maximum likelihood via EM, from rater votes alone.
+Every label model in programmatic weak supervision, and the
+masked-cause statement of it in this paper, is a descendant of that
+work. The EM solver of Dawid--Skene is the maximum-likelihood solver
+for the coarsened likelihood \eqref{eq:bg-c1c2c3}; the framework here
+does not replace it, it gives it an identifiability vocabulary.
+
+\paragraph{Moment-based identifiability is established.} Data
+programming \citep{ratner2016data} showed that LF accuracies are
+recoverable from agreement statistics under conditional independence;
+the triplet method of \citet{fu2020fast} made the recovery a
+closed form in third-order agreement moments; the multi-task
+extension \citep{ratner2019training,ratner2020training} handled
+structured dependence with a known dependency graph;
+\citet{bach2017learning} showed the dependency structure can
+sometimes be learned, but only under restrictive conditions.
+\Cref{thm:ci-identifiability} is a re-derivation of this body of
+results, not a new identifiability claim. The crowdsourcing
+literature \citep{karger2011iterative,zhang2016spectral} solved the
+same estimation problem for human annotators; the spectral and
+tensor-decomposition tools \citep{anandkumar2014tensor} use the
+same low-rank moment structure that underlies the masked-cause
+augmented-matrix rank condition (\cref{thm:bg-id}). The Snorkel
+ecosystem \citep{ratner2018snorkelmetal,bach2019snorkeldrybell,
+sala2019multiresolution,zhang2022survey} has expanded weak
+supervision to multi-task, deployment, sequential, and interactive
+\citep{boecking2021interactive} settings; the masked-cause framework
+applies to each, because all share the LF-vote-matrix input.
+
+\paragraph{What this paper adds.} The contribution is narrower than
+``label-model identifiability'' and is fourfold. (i) The masked-cause
+unification: LF votes are a candidate-set coarsening, abstention is a
+non-informative candidate set, a confident vote is a narrowed one,
+and gold labels are singletons. This places weak supervision in the
+same frame as the other applications of the masked-cause framework
+\citep{towell2026masked}. (ii) The C1--C2--C3 classification of LF
+ensembles: the three coarsening-at-random conditions become checkable
+statements about an LF set (support, label-only error dependence,
+parameter separation). (iii) The explicit glass-ceiling construction:
+the accuracy-complement symmetry of \cref{thm:glass-ceiling} is a
+precise statement, with an exact label-flip witness, of why gold-free
+estimation cannot orient the model. (iv) The gold-set
+sample-complexity theorem for the dependent case
+(\cref{thm:goldset}): prior work establishes the conditionally
+independent corner ($r = 0$); the $\Theta(r / \mathrm{gap}^2)$ bound
+for total model recovery extends it to the correlated ensembles that
+practice produces, and the $1/\mathrm{gap}^2$ scaling is confirmed in
+simulation. We do not
+claim to invent label-model identifiability; we claim a unifying
+frame, a classification, and a sample-complexity result for the
+dependent case.
+
+\subsection{What the framework does \emph{not} address}
+
+\begin{itemize}
+\item \textbf{Multiclass and structured outputs.} The development is
+  binary. The masked-cause framework extends to a categorical latent
+  cause directly, and Dawid--Skene is natively multiclass; the
+  C1--C2--C3 statements and the rank arguments carry over, but we did
+  not write out the multiclass theorems here.
+
+\item \textbf{Unknown dependency structure.} \Cref{thm:goldset}
+  assumes the rank deficit $r$ is a property of the ensemble, but
+  $r$ is itself estimated. Recovering the dependency graph from data,
+  rather than assuming it as in \citet{ratner2019training}, is a
+  harder problem the framework does not solve.
+
+\item \textbf{Abstention that depends on the label.} We model
+  coverage $\beta_j$ as independent of $Y$. An LF that abstains
+  preferentially on one class is a label-dependent coarsening, a C2
+  violation the present analysis does not cover; the C2-relaxation
+  results of \citet{towell2026mdrelax} are the natural tool.
+
+\item \textbf{The downstream model.} The framework analyzes the label
+  model. Whether the probabilistic training labels it emits yield a
+  good downstream classifier is a separate generalization question,
+  governed by the end-to-end analysis of \citet{ratner2016data}.
+
+\item \textbf{Adversarial or systematically wrong LFs.} C1 fails when
+  an LF is confidently wrong beyond the modeled noise. Such LFs need
+  detection and removal, which the framework flags as a C1 violation
+  but does not itself perform.
+\end{itemize}
+
+\subsection{Broader implications}
+
+The framework shifts the question a weak-supervision practitioner
+asks from ``which label model should I use?'' to ``which
+coarsening-at-random conditions does my LF ensemble satisfy?'' If the
+LFs are conditionally independent and better than random, the
+ensemble is on the identifiable side of the boundary and a gold-free
+pipeline is sound (\cref{thm:ci-identifiability}). If the LFs are
+correlated, the ensemble is rank-deficient and gold labels are
+required, with a budget set by the rank deficit and the accuracy
+margin (\cref{thm:goldset}). If an LF is confidently wrong, C1 fails
+and no aggregation rescues it. This is the same assumption-specific
+reasoning previously brought to other masked-cause applications in
+the framework series \citep{towell2026masked}: recognizing the
+common masked-cause structure lets one identifiability apparatus
+serve measurement problems that look unrelated on the surface. The
+framework series collectively argues that the candidate-set
+abstraction is a general tool for any inference problem in which
+observations partially-determine a latent cause.

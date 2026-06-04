@@ -1,0 +1,88 @@
+\section{Masked-cause inference: brief primer}
+\label{sec:background}
+
+We summarize the masked-cause identifiability framework
+\citep{towell2026masked,heitjan1991ignorability,gill1997coarsening}.
+Readers familiar with that work, or with the companion applications
+\citep{towell2026scrnacoarsening,towell2026spatialcoarsening}, can
+skim to \cref{sec:translation}.
+
+Consider $m$ independent components in series. Each component $j$ has
+a parametric distribution $f_j(\cdot;\theta_j)$ for its lifetime
+$T_{ij}$ in system $i$. The system fails at $T_i = \min_j T_{ij}$
+with cause $K_i = \arg\min_j T_{ij}$. We observe $T_i$ but not $K_i$
+directly; instead we observe a \emph{candidate set} $C_i \subseteq
+\{1,\ldots,m\}$ thought to contain the failed component.
+
+The joint likelihood factorizes as
+\begin{equation}
+  f(t, k, c; \theta)
+  = h_k(t; \theta_k) \prod_{\ell} R_\ell(t; \theta_\ell)
+    \cdot \Prob_\theta\{C_i = c \mid T_i = t, K_i = k\},
+  \label{eq:bg-joint}
+\end{equation}
+where $h_\ell$ is the component-$\ell$ hazard and $R_\ell$ its
+survival function. The third factor is the unknown coarsening (or
+masking) mechanism.
+
+Three coarsening-at-random conditions allow the masking factor to
+drop from the score:
+
+\begin{condition}[Support, C1]
+\label{cond:c1}
+$\Prob\{K_i \in C_i\} = 1$: the true cause lies in the candidate set.
+\end{condition}
+
+\begin{condition}[Symmetry, C2]
+\label{cond:c2}
+$\Prob_\theta\{C_i=c \mid T_i=t, K_i=j\} = \Prob_\theta\{C_i=c \mid
+T_i=t, K_i=k\}$ for all $j,k \in c$: the coarsening does not depend on
+which element of the candidate set is the true cause.
+\end{condition}
+
+\begin{condition}[Parameter independence, C3]
+\label{cond:c3}
+$\Prob_\theta\{C_i=c \mid T_i, K_i\}$ does not depend on $\theta$: the
+coarsening parameters are distinct from the component parameters.
+\end{condition}
+
+Under all three, the likelihood collapses to
+\begin{equation}
+  L_i(\theta) \propto \left[\prod_\ell R_\ell(t_i;\theta_\ell)\right]
+  \cdot \left[\sum_{j \in c_i} h_j(t_i; \theta_j)\right],
+  \label{eq:bg-c1c2c3}
+\end{equation}
+that is, the coarsening mechanism becomes ignorable for likelihood
+inference.
+
+\citet[Theorem 8]{towell2026masked} establish identifiability under
+these conditions:
+
+\begin{theorem}[Identifiability under C1--C2--C3]
+\label{thm:bg-id}
+Under \cref{cond:c1,cond:c2,cond:c3} and standard regularity
+(in particular, positive probability assigned to both exact-event
+and censored-type observations), full column rank $m$ of the
+augmented candidate-set matrix $\tilde{C} \in \{0,1\}^{n \times m}$
+is \emph{sufficient} for $\theta$ to be identifiable. Separability
+is necessary but not in general sufficient (a separating mechanism
+can leave $\tilde{C}$ rank-deficient, e.g. $m=4$ with candidate
+sets $\{1,2\},\{3,4\},\{1,3\},\{2,4\}$).
+\end{theorem}
+
+\emph{Singleton} candidate sets ($|c_i|=1$) are the critical
+ingredient: each isolates a single component contribution in
+\eqref{eq:bg-c1c2c3} and adds an identifying unit-vector row to
+$\tilde{C}$. When broader candidate sets are confounded (the matrix
+$\tilde{C}$ is rank-deficient), singletons restore the missing rank.
+
+This framework has been ported to single-cell RNA sequencing zero
+inflation \citep{towell2026scrnacoarsening} and to
+spatial-transcriptomics deconvolution
+\citep{towell2026spatialcoarsening}. We now port it to programmatic
+weak supervision. The candidate-set structure here is combinatorial:
+each labeling function emits a vote (or abstains), and the
+intersection of the votes defines the candidate set over labels. The
+coarsening mechanism is the joint LF noise model, and the three
+conditions become statements about how LF errors relate to the true
+label and to the label-model parameters.

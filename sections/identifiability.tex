@@ -1,0 +1,238 @@
+\section{Identifiability and agreement consistency}
+\label{sec:identifiability}
+
+We port \cref{thm:bg-id} to the label model. Three results follow:
+the glass ceiling (T1), identifiability under conditional
+independence (T2), and agreement consistency (T3).
+
+\subsection{The glass ceiling: gold-free non-identifiability}
+
+The label model is fit from LF votes alone. Whether its parameters
+can be recovered from the vote distribution is an identifiability
+question, and the answer without further structure is negative.
+
+\begin{theorem}[Glass ceiling, gold-free non-identifiability]
+\label{thm:glass-ceiling}
+Let $\bm{\lambda}_i$ be the LF votes under the DGP of
+\cref{sec:translation}, with unknown accuracies $\bm{\alpha}$,
+coverages $\bm{\beta}$, and class prior $\pi$. Without gold-labeled
+examples, and absent a structural assumption on LF dependence or LF
+orientation, the pair $(\bm{\alpha}, \pi)$ is non-identifiable from
+the distribution of LF votes: there exist distinct parameter sets
+producing identical vote distributions. In particular the
+accuracy-complement symmetry holds: replacing $(\pi, \bm{\alpha})$ by
+$(1 - \pi,\ \1 - \bm{\alpha})$ leaves every joint vote probability
+unchanged.
+\end{theorem}
+
+\begin{proof}[Sketch]
+We exhibit non-identifiability by construction. Fix any example with
+votes $\bm{\lambda}$. Under the symmetric accuracy model, the joint
+probability of the votes marginalizing over $Y$ is
+\begin{equation}
+  \Prob\{\bm{\lambda}\}
+  = \sum_{y \in \{0,1\}} \Prob\{Y = y\}
+    \prod_{j:\,\lambda_j \neq \varnothing}
+    \beta_j\, \alpha_j^{\1\{\lambda_j = y\}}
+    (1-\alpha_j)^{\1\{\lambda_j \neq y\}}
+    \prod_{j:\,\lambda_j = \varnothing} (1 - \beta_j).
+  \label{eq:id-jointvote}
+\end{equation}
+Apply the relabeling $y \mapsto 1 - y$ inside the sum. The prior term
+$\Prob\{Y = y\}$ becomes $\Prob\{Y = 1 - y\}$, which is the prior of
+the parameter set with $\pi$ replaced by $1 - \pi$. Each factor
+$\alpha_j^{\1\{\lambda_j = y\}}(1-\alpha_j)^{\1\{\lambda_j \neq y\}}$
+becomes $\alpha_j^{\1\{\lambda_j \neq y\}}(1-\alpha_j)^{\1\{\lambda_j
+= y\}}$, which is the factor of the parameter set with $\alpha_j$
+replaced by $1 - \alpha_j$. The coverage factors are untouched. Hence
+$(\pi, \bm{\alpha})$ and $(1 - \pi, \1 - \bm{\alpha})$ produce
+identical $\Prob\{\bm{\lambda}\}$ for every vote pattern, so they are
+observationally indistinguishable. An LF of accuracy $\alpha_j > 1/2$
+is statistically a mirror image of one with accuracy $1 - \alpha_j <
+1/2$ that has its output label flipped. The two solutions are
+separated only by an external assumption: ``every LF is better than
+random'' ($\alpha_j > 1/2$, fixing each LF's orientation), a fixed
+class prior, or conditional independence with a known sign on one
+agreement moment. The binary case exhibits the $\mathbb{Z}/2$
+label-permutation element of the symmetric group; the multiclass
+analog is the full symmetric group $\mathfrak{S}_K$ acting on
+$\{0, 1, \ldots, K-1\}$, and the corresponding obstruction is
+non-identifiability up to a label permutation. The reduction of the
+gold-free obstruction to a rank condition on the augmented
+candidate-set matrix is \cref{thm:bg-id} of \cref{sec:background};
+the full apparatus, including regularity conditions, is in
+\citet{towell2026masked}.
+\end{proof}
+
+\Cref{thm:glass-ceiling} is the weak-supervision instance of the
+glass-ceiling phenomenon: an estimator that uses only LF votes cannot
+orient the label model. It is the same structural obstruction that
+\citet{towell2026scrnacoarsening} identify for scRNA-seq zeros, here
+made fully explicit as a label-flip symmetry. A single gold-labeled
+example breaks the symmetry: it is a singleton candidate set whose
+known label fixes the orientation, adding an identifying row to the
+augmented candidate-set matrix of \cref{thm:bg-id}. The
+better-than-random assumption is the cost-free alternative when it is
+credible; the next theorem shows what conditional independence buys
+without any gold data.
+
+\subsection{Identifiability under conditional independence}
+
+The standard rescue in data programming is the assumption that LFs
+err independently given the label. Under that assumption the label
+model is identifiable from agreement moments alone.
+
+\begin{theorem}[Identifiability under conditional independence]
+\label{thm:ci-identifiability}
+Suppose the LF votes are conditionally independent given $Y$, that at
+least three LFs have non-degenerate accuracy ($\alpha_j \neq 1/2$ and
+$0 < \beta_j \le 1$), and that LF orientations are fixed (e.g., every
+LF is better than random). Then the accuracies $\bm{\alpha}$ and the
+class prior $\pi$ are identifiable from the second- and third-order
+LF agreement moments.
+\end{theorem}
+
+\begin{proof}[Sketch]
+Encode each non-abstaining vote as $\sigma_{ij} = 2\,\1\{\lambda_{ij}
+= 1\} - 1 \in \{-1, +1\}$ and the latent label as $Z = 2Y - 1$.
+Conditional independence gives, for distinct LFs $j, k, \ell$ that
+all vote,
+\begin{equation}
+  \E[\sigma_j \sigma_k] = a_j a_k, \qquad
+  \E[\sigma_j \sigma_k \sigma_\ell] = a_j a_k a_\ell,
+  \label{eq:id-triplet}
+\end{equation}
+where $a_j = \E[\sigma_j Z] = 2\alpha_j - 1$ is the LF's
+\emph{accuracy margin} (its centered accuracy). Equation
+\eqref{eq:id-triplet} is the moment structure exploited by the
+triplet method of \citet{fu2020fast}. From three LFs, the three
+pairwise products and the one triple product give
+\begin{equation}
+  a_j^2 = \frac{\E[\sigma_j \sigma_k]\,\E[\sigma_j \sigma_\ell]}
+               {\E[\sigma_k \sigma_\ell]},
+  \label{eq:id-solve}
+\end{equation}
+and symmetric expressions for $a_k, a_\ell$; the triple product fixes
+the common sign, and the fixed-orientation assumption (or the
+better-than-random assumption) selects $a_j > 0$. Each $a_j$
+determines $\alpha_j = (1 + a_j)/2$. With the margins known, the
+first moment $\E[\sigma_j] = a_j\,\E[Z] = a_j(2\pi - 1)$ identifies
+$\pi$. Non-degeneracy ($a_j \neq 0$) keeps every denominator nonzero.
+This is the data-programming and Dawid--Skene identifiability result
+\citep{dawid1979maximum,ratner2016data,fu2020fast} re-derived as a
+masked-cause statement: conditional independence makes the augmented
+candidate-set matrix full column rank, so \cref{thm:bg-id} applies
+and $(\bm{\alpha}, \pi)$ is identifiable without gold data.
+\end{proof}
+
+\Cref{thm:ci-identifiability} is the positive counterpart of T1.
+Conditional independence is the structural assumption that breaks the
+glass ceiling without gold labels: it supplies the moment equations
+\eqref{eq:id-triplet} whose rank is exactly the augmented
+candidate-set rank of \cref{thm:bg-id}. The fixed-orientation
+assumption (each LF is declared to vote on the positive side of its
+target class) is a checkable property of each LF's source code; it
+is not automatic, however, since an LF written backward (a regex
+that positively matches the negative class) reverses its sign and
+silently violates the assumption. The assumption is also the
+fragile one. When LFs share error structure (two regex LFs keyed on
+the same token, two model-based LFs sharing a backbone), the products
+in \eqref{eq:id-triplet} pick up cross terms, the rank drops, and the
+gold-free estimator is biased. \Cref{sec:methodology} quantifies how
+much gold data restores the lost rank.
+
+\subsection{Agreement consistency}
+
+A structural property holds for any label model fit by maximum
+likelihood, regardless of whether the conditional-independence
+assumption is correct: the fitted model reproduces the empirical
+pairwise LF agreement rates.
+
+\begin{theorem}[Agreement consistency, regular exponential family]
+\label{thm:agreement-consistency}
+Let $(\hat{\bm{\alpha}}, \hat{\pi})$ be a maximum-likelihood estimate
+of the label model for a parametrization that forms a regular
+exponential family whose sufficient statistics include the pairwise
+LF agreement indicators $\1\{\lambda_{ij} = \lambda_{ik}\}$ (the
+standard naive-Bayes parametrization of \citet{ratner2016data} does
+not satisfy this hypothesis exactly; an asymptotic version of the
+identity for the naive-Bayes corner is given in
+\cref{cor:agreement-nb} below). Then for
+every pair of LFs $(j, k)$,
+\begin{equation}
+  \widehat{\Prob}\{\lambda_j = \lambda_k \mid \text{both vote}\}
+  = \bar{A}_{jk},
+  \label{eq:agreement}
+\end{equation}
+where $\bar{A}_{jk}$ is the empirical agreement rate of LFs $j$ and
+$k$ on the examples where both vote. The identity holds exactly at
+any \emph{interior} MLE (no $\hat\alpha_j \in \{0,1\}$, no
+$\hat\beta_j \in \{0,1\}$, $\hat\pi \in (0,1)$); boundary cases
+reduce to degenerate-LF identities.
+\end{theorem}
+
+\begin{proof}[Sketch]
+The argument parallels the cell-total consistency proof of
+\citet[\S 3]{towell2026scrnacoarsening}. For a regular exponential
+family the MLE satisfies the moment-matching identity
+$\E_{\hat\theta}[T(\bm{\lambda})] = \bar{T}$ for every sufficient
+statistic $T$ (the stationarity of the log-partition gradient). When
+$T$ is the pair-$(j,k)$ agreement indicator
+$\1\{\lambda_{ij} = \lambda_{ik}\}$ this is exactly
+\eqref{eq:agreement}. The full derivation, including the boundary
+regimes, is the moment-matching argument of
+\citet{towell2026scrnacoarsening} with the candidate-set sufficient
+statistic specialized to LF agreement.
+\end{proof}
+
+The conditioning matters: the identity \eqref{eq:agreement} is a
+sufficient-statistic consequence, so it follows whenever the
+parametrization is rich enough to count pairwise agreement among its
+sufficient statistics. The standard naive-Bayes label model of data
+programming \citep{ratner2016data} parametrizes by per-LF accuracies
+$\bm{\alpha}$ and the class prior $\pi$; the pairwise agreement
+indicators are \emph{not} per-pair sufficient statistics of that
+parametrization. The result still applies in a weaker, asymptotic
+sense for the conditionally independent corner:
+
+\begin{corollary}[Asymptotic agreement consistency for naive-Bayes]
+\label{cor:agreement-nb}
+Under the conditional-independence assumption of
+\cref{thm:ci-identifiability}, the naive-Bayes label model
+parametrized by $(\bm{\alpha}, \pi)$ satisfies
+\eqref{eq:agreement} asymptotically: at the population
+parameter values the joint vote factorization implies $\Prob\{
+\lambda_j = \lambda_k\} = \alpha_j \alpha_k + (1-\alpha_j)(1-\alpha_k)$
+exactly, and the MLE converges to that value at the standard
+$n^{-1/2}$ rate. The identity holds in the limit, not at every finite
+sample.
+\end{corollary}
+
+The simulation in \cref{sec:validation} confirms this asymptotic
+behavior at large $n$: the agreement residual decays as $n^{-1/2}$
+and reaches Monte-Carlo noise at $n = 500{,}000$. The simulation is
+consistent with \cref{thm:agreement-consistency} for the extended
+exponential-family parametrization and with \cref{cor:agreement-nb}
+for the naive-Bayes parametrization; it does not isolate the
+sufficient-statistic property structurally.
+
+\Cref{thm:agreement-consistency} is the label-model analogue of
+cell-total consistency. Its practical force is a warning. Two label
+models, one assuming conditional independence and one fit with a
+dependency graph, can both reproduce every observed pairwise
+agreement rate exactly (the first via \cref{cor:agreement-nb}
+asymptotically, the second via \cref{thm:agreement-consistency} at
+the exact MLE), while disagreeing on the LF accuracies and hence on
+the probabilistic training labels. A practitioner checking ``does
+the fitted model match the observed LF agreement?'' will see a
+perfect fit from a biased model. Diagnosing accuracy bias requires
+either gold labels or an external structural assumption; the marginal
+agreement fit cannot do it. The same caution was raised for the ZINB
+MLE in \citet{towell2026scrnacoarsening}; here it is sharper, because
+the dependent and independent label models satisfy
+\eqref{eq:agreement} jointly yet imply different supervision.
+Agreement consistency (\cref{thm:agreement-consistency}) is a special
+case of the general coarsened-data consistency theorem of
+\citet{towell2026synthesis}, in which the singleton-candidate-set
+device used here, gold labels, appears as one instance of a
+domain-independent rank condition and singleton-restoration mechanism.

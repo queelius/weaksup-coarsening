@@ -1,0 +1,120 @@
+\section{Introduction}
+\label{sec:intro}
+
+Supervised learning needs labeled data, and hand-labeling is the
+recurring bottleneck. Programmatic weak supervision attacks the
+bottleneck by replacing hand-labels with \emph{labeling functions}
+(LFs): small, noisy, user-written programs that vote on an example's
+label or abstain \citep{ratner2016data,ratner2017snorkel}. A heuristic
+keyword match, a regular expression, a knowledge-base lookup, or the
+output of an off-the-shelf classifier each becomes one LF. Many LFs,
+individually unreliable, collectively carry signal. The data
+programming paradigm \citep{ratner2016data} and the Snorkel system
+built on it \citep{ratner2017snorkel} fit a \emph{label model} that
+estimates each LF's accuracy and aggregates the LF votes into
+probabilistic training labels, which then train a downstream
+classifier. The defining promise is gold-free supervision: no
+hand-labeled examples are required to fit the label model.
+
+That promise rests on an identifiability claim. The label model is
+estimated from LF votes alone, so its parameters (per-LF accuracies,
+the class prior) must be \emph{recoverable} from the distribution of
+LF votes. When they are not, the fitted label model is one of many
+that explain the votes equally well, and the probabilistic training
+labels it emits are not trustworthy. The weak-supervision literature
+has answered this question in pieces. \citet{dawid1979maximum}
+established maximum-likelihood estimation of rater error rates by EM
+in the crowdsourcing setting. \citet{ratner2016data} and the triplet
+method of \citet{fu2020fast} proved that LF accuracies are
+identifiable from agreement moments when the LFs are conditionally
+independent given the label. \citet{ratner2019training} extended the
+moment approach to structured dependence with a known dependency
+graph. What has been missing is a single inferential frame that says
+\emph{which} LF ensembles are identifiable, what auxiliary
+information rescues the rest, and at what cost.
+
+\subsection{The bridge to masked-cause inference}
+
+We observe that label-model estimation is an instance of the
+masked-cause series-system identifiability problem from reliability
+statistics \citep{towell2026masked}. In that framework, $m$
+components in series produce a system that fails when any one fails;
+the failed component is masked, but a \emph{candidate set} containing
+it is observed. Identifiability of component-level parameters hinges
+on coarsening-at-random conditions, the C1--C2--C3 conditions of
+\citet{heitjan1991ignorability} and \citet{gill1997coarsening}, and a
+\emph{singleton} candidate set (an observation where the cause is
+known exactly) restores identifiability when broader coarsening is
+confounded.
+
+The translation to weak supervision is direct. The true label $Y$ is
+the latent cause. The set of labels consistent with the LF votes for
+an example is the candidate set. An LF that abstains contributes
+nothing and leaves the candidate set full (a non-informative
+coarsening); an LF that votes confidently narrows the candidate set;
+a gold-labeled (hand-annotated) example pins the candidate set to a
+singleton. The C1--C2--C3 conditions become a classification of LF
+ensembles, and the masked-cause identifiability theorems give the
+precise conditions under which a gold-free pipeline is identifiable.
+The present paper is one application of the masked-cause framework
+of \citet{towell2026masked}.\footnote{Sibling applications in the
+framework series address scRNA-seq zero inflation, spatial
+transcriptomics, differential privacy, and EHR phenotyping
+\citep{towell2026scrnacoarsening,towell2026spatialcoarsening,
+towell2026dpcoarsening,towell2026phenotypecoarsening}.}
+
+\subsection{Contributions}
+
+We contribute:
+
+\begin{itemize}
+\item \textbf{A bridge from programmatic weak supervision to
+  masked-cause inference} (\cref{sec:translation}), expressing the
+  label model of data programming and Snorkel as a coarsening problem
+  and casting the C1--C2--C3 conditions as a classification of LF
+  ensembles.
+
+\item \textbf{A glass-ceiling theorem} (T1, \cref{sec:identifiability}):
+  without gold labels and without a structural assumption on LF
+  dependence, the LF accuracies and class prior are non-identifiable.
+  We exhibit the obstruction explicitly as an accuracy-complement
+  symmetry, broken only by an assumption such as ``LFs are better than
+  random'' or conditional independence.
+
+\item \textbf{An identifiability theorem under conditional
+  independence} (T2, \cref{sec:identifiability}): with conditionally
+  independent LFs and at least three of non-degenerate accuracy, the
+  LF accuracies and class prior are identifiable from the second- and
+  third-order agreement moments. This re-derives the
+  Dawid--Skene / data-programming / triplet-method result as a
+  masked-cause theorem.
+
+\item \textbf{An agreement-consistency theorem} (T3,
+  \cref{sec:identifiability}): the fitted label model reproduces the
+  empirical pairwise LF agreement rates exactly at an interior MLE.
+  This is the label-model analogue of the cell-total consistency
+  result of \citet{towell2026scrnacoarsening}.
+
+\item \textbf{A gold-set sample-complexity theorem} (T4,
+  \cref{sec:methodology}): when LFs violate conditional independence,
+  with the dependence inducing a parameter-degeneracy dimension $r$ in
+  the agreement structure, the number of gold-labeled examples needed
+  to restore the label model to total (L2) accuracy is
+  $\Theta(r / \mathrm{gap}^2)$ in that degeneracy dimension and the
+  accuracy margin, with matching upper and minimax lower bounds; the
+  rate is loss-dependent, falling to $\Theta(\log r / \mathrm{gap}^2)$
+  under a per-direction criterion. Singletons restore the rank that LF
+  dependence destroys.
+
+\item \textbf{Simulation validation} (\cref{sec:validation}). A
+  base-R study confirms the glass-ceiling symmetry, gold-free recovery
+  under conditional independence, agreement consistency to numerical
+  precision, and the gold-set scaling under injected LF dependence.
+\end{itemize}
+
+The paper's message: gold-free weak supervision is not magic, it is a
+coarsening problem with a precise identifiability boundary. The
+C1--C2--C3 conditions tell a practitioner whether their LF ensemble
+is on the identifiable side of that boundary, and the
+sample-complexity theorem tells them how much gold data buys back
+identifiability when it is not.

@@ -1,0 +1,135 @@
+\section{Translation: the label model as a coarsening problem}
+\label{sec:translation}
+
+\subsection{The data-generating process}
+
+Consider a binary classification task with true label $Y \in \{0,1\}$
+and class prior $\pi = \Prob\{Y = 1\}$; the multiclass case is a
+direct extension. There are $m$ labeling functions. For example $i$,
+LF $j$ emits a vote $\lambda_{ij} \in \{0, 1, \varnothing\}$, where
+$\varnothing$ denotes \emph{abstention}. Each LF $j$ has a
+\emph{coverage} $\beta_j = \Prob\{\lambda_{ij} \neq \varnothing\}$,
+the probability it does not abstain, and an \emph{accuracy}
+$\alpha_j = \Prob\{\lambda_{ij} = Y \mid \lambda_{ij} \neq
+\varnothing\}$, the probability it votes correctly given that it
+votes. When LF $j$ votes, it emits $Y$ with probability $\alpha_j$
+and the complementary label $1 - Y$ with probability $1 - \alpha_j$.
+
+The label model is fit to the matrix of votes $\{\lambda_{ij}\}$. Its
+parameters are the per-LF accuracies $\bm{\alpha} = (\alpha_1, \ldots,
+\alpha_m)$, the coverages $\bm{\beta}$, and the class prior $\pi$.
+Coverages are directly observed (each is an empirical abstention
+rate), so the inferential content is the recovery of $\bm{\alpha}$
+and $\pi$, after which the posterior $\Prob\{Y = y \mid
+\bm{\lambda}_i\}$ supplies the probabilistic training label for
+example $i$.
+
+\subsection{LF votes as a candidate set}
+
+The votes of the $m$ LFs on example $i$ induce a \emph{candidate set}
+$c_i \subseteq \{0, 1\}$: the set of labels still consistent with the
+observed votes under the modeled noise. An LF that abstains
+constrains nothing. An LF that votes is consistent with both labels
+(it could be voting correctly or incorrectly) until its accuracy is
+known, but its vote shifts the posterior mass. In the deterministic
+limit, where an LF that votes is treated as ground truth, a single
+confident vote collapses the candidate set to that label; a
+gold-labeled example fixes the candidate set to the singleton
+$\{Y_i\}$ by construction. The probabilistic label model is the
+soft-coarsening relaxation of this combinatorial picture: instead of
+a hard candidate set, each example carries a distribution over
+$\{0,1\}$ determined by the LF votes and the accuracy parameters.
+
+\subsection{The translation}
+
+\Cref{tab:translation} states the explicit correspondence to
+masked-cause inference.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}p{0.40\linewidth} p{0.56\linewidth}@{}}
+\toprule
+\textbf{Masked-data framework} & \textbf{Programmatic weak supervision} \\
+\midrule
+Component / latent cause $K_i$ & True label $Y$ \\
+Candidate set $c_i$ & Labels consistent with the LF votes for an example \\
+Masking probability & The per-LF accuracy / confusion model \\
+Singleton candidate set $|c_i|=1$ & A gold-labeled (hand-annotated) example \\
+Non-informative (full) candidate set & An LF that abstains \\
+Narrowed candidate set & A confident LF vote \\
+Augmented candidate-set matrix $\tilde C$ & The matrix of LF votes
+  augmented with any gold labels; full column rank gives
+  identifiability \\
+C1 (truth in candidate set) & True label consistent with the votes;
+  holds unless LFs are confidently wrong beyond modeled noise \\
+\textbf{C2} (coarsening at random): conditional on the candidate set, the masking distribution does not depend on which element is the true cause &
+  Concretely: LF error depends on $Y$ only through the modeled
+  confusion, not on the label-model parameters \\
+C3 (parameter independence) & LF accuracy parameters distinct from
+  the downstream model parameters \\
+\bottomrule
+\end{tabular}
+\caption{Translation between the masked-cause framework
+\citep{towell2026masked} and programmatic weak supervision.}
+\label{tab:translation}
+\end{table}
+
+The three conditions deserve a reading in the weak-supervision
+language.
+
+\paragraph{C1, support.} The true label must remain consistent with
+the LF votes. This fails exactly when an LF is confidently wrong in a
+way the noise model does not allow, for example an LF whose error is
+systematic on a subpopulation (a label-conditional bias the
+symmetric accuracy parameter cannot represent). For ordinary noisy
+LFs, C1 holds: the modeled noise already admits any vote pattern.
+
+\paragraph{C2, symmetry.} LF error must depend on $Y$ only through
+the modeled confusion. An LF whose error rate is itself a function of
+the label-model parameters, or whose mistakes are correlated with the
+quantity being estimated, breaks C2. The standard data-programming
+accuracy model satisfies C2 by construction: $\Prob\{\lambda_{ij}
+\mid Y\}$ is a fixed confusion table.
+
+\paragraph{C3, parameter independence.} The LF accuracy parameters
+$\bm{\alpha}$ must be distinct from the downstream classifier's
+parameters. This holds in the standard pipeline, where the label
+model is fit first and the downstream model second; it would fail in
+a joint end-to-end scheme that ties LF reliability to downstream
+performance.
+
+\subsection{Existing methods in this language}
+
+\paragraph{Dawid--Skene \citep{dawid1979maximum}} fit per-rater
+confusion matrices and a class prior by EM. In our language: the
+candidate-set coarsening is the confusion table, and EM is the
+maximum-likelihood solver for the coarsened likelihood
+\eqref{eq:bg-c1c2c3}. Dawid--Skene is the clear ancestor of the
+label model.
+
+\paragraph{Data programming \citep{ratner2016data}} fits a
+factor-graph label model and, in the independent case, recovers LF
+accuracies from agreement statistics. This is identifiability under
+C1--C2--C3 with conditionally independent LFs (\cref{sec:identifiability}).
+
+\paragraph{Snorkel \citep{ratner2017snorkel}} is the system built on
+data programming; the multi-task extension \citep{ratner2019training}
+handles structured LF dependence with a known dependency graph. In
+our language, a known dependency graph is a structural assumption
+that repairs the rank deficit C2 violations would otherwise cause.
+
+\paragraph{Triplet method \citep{fu2020fast}} recovers LF accuracies
+in closed form from third-order agreement rates of conditionally
+independent LFs. This is the constructive proof of T2 below.
+
+\paragraph{Crowdsourcing \citep{karger2011iterative}} solves the same
+estimation problem with workers in place of LFs and message-passing
+in place of EM. The masked-cause frame covers both: a worker and an
+LF are both noisy coarsenings of the true label.
+
+These methods are not in conflict; they are different solvers and
+parametrizations of one coarsening problem. The framework states
+precisely when each is identifiable and what auxiliary information
+(gold labels, a dependency graph, a better-than-random assumption)
+each implicitly requires.
