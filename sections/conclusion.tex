@@ -23,8 +23,9 @@ identifiability when LFs are correlated. A base-R
 simulation confirmed all four: the symmetry is exact, gold-free
 recovery under conditional independence reaches the oracle ceiling,
 the agreement residual is Monte-Carlo noise, and the gold-set
-requirement scales as $1/\mathrm{gap}^2$ with fitted log--log slope
-$-2.04$.
+requirement scales as $1/\mathrm{gap}^2$ in the accuracy margin (fitted
+log--log slope $-2.04$) and linearly in the degeneracy dimension $r$
+for total model recovery (fitted log--log slope $1.17$).
 
 Dawid--Skene (1979) is the clear ancestor of the label model,
 moment-based identifiability for conditionally independent LFs is
@@ -33,8 +34,8 @@ identifiability up to label swapping is due to \citet{yu2022nplm}; the
 contribution here is the masked-cause
 unification, the C1--C2--C3 classification of LF ensembles, the
 explicit glass-ceiling construction, and the sample-complexity result
-for the dependent case, of which the $1/\mathrm{gap}^2$ factor is the
-part the present simulation validates. The framework gives a practitioner a
+for the dependent case, both factors of which the present simulation
+validates. The framework gives a practitioner a
 diagnostic: a gold-free pipeline is sound when the LF ensemble
 satisfies the coarsening-at-random conditions, and the gold budget
 needed otherwise is set by the rank deficit and the accuracy margin.

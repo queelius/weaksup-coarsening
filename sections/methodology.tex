@@ -88,7 +88,7 @@ $\mathrm{gap}$ as in \eqref{eq:meth-gap}. Suppose the gold-labeled
 examples are drawn i.i.d.\ from the same distribution, and fix the
 success criterion to be \emph{total model recovery in the Euclidean
 (L2) margin error}: the hybrid agreement-moment-plus-gold estimator
-$\hat{\bm{a}}$ should satisfy $\|\hat{\bm{a}} - \bm{a}\|_2 \le c_0\,
+$\hat{\bm{a}}$ should satisfy $\|\hat{\bm{a}} - \bm{a}\|_2 \le c_{\mathrm{tol}}\,
 \mathrm{gap}$, equivalently it should keep the downstream training-label
 posterior KL below a fixed budget (\cref{rmk:l2-loss}). Then there are
 constants $c, C$, depending only on the LF coverages and on bounded
@@ -99,7 +99,7 @@ moments of the vote distribution, such that with
   \label{eq:goldset-bound}
 \end{equation}
 gold-labeled examples the label model $(\bm{\alpha}, \pi)$ is recovered
-to total accuracy $\|\hat{\bm{a}} - \bm{a}\|_2 \le c_0\,\mathrm{gap}$
+to total accuracy $\|\hat{\bm{a}} - \bm{a}\|_2 \le c_{\mathrm{tol}}\,\mathrm{gap}$
 with probability at least $1 - \delta$, and this rate is minimax
 optimal in $r$ and $\mathrm{gap}$:
 \begin{equation}
@@ -161,7 +161,7 @@ chi-square (Bernstein / Hanson--Wright) tail
 \citep{wainwright2019high} sharpens the deviation to
 $\|B^\top(\bar{\bm{\xi}} - \bm{a})\|_2^2 \le C(r + \log(1/\delta))/(n_g
 \beta_{\min})$ with probability $1 - \delta$, so requiring this below
-$(c_0\,\mathrm{gap})^2$ gives \eqref{eq:goldset-bound}. No $\log r$
+$(c_{\mathrm{tol}}\,\mathrm{gap})^2$ gives \eqref{eq:goldset-bound}. No $\log r$
 factor appears: the trace bound targets the total L2 error directly,
 not each direction separately.
 
@@ -169,17 +169,18 @@ not each direction separately.
 sub-family with $E$ in a fixed $r$-dimensional subspace and $\bm{a}$
 ranging over the $r$-dimensional affine manifold embeds the
 $r$-dimensional Gaussian location model with per-coordinate variance
-$\ge c_0 = (1 - \mathrm{gap}^2)/\beta_{\max} > 0$ and $n_g$ samples
-inside the problem, so its minimax risk lower-bounds the full risk. The
-minimax L2 squared risk of the $r$-dimensional Gaussian location model
-is $\inf_{\hat{\bm{a}}}\sup_{\bm{a}} \E\|\hat{\bm{a}} - \bm{a}\|_2^2 \ge
-c_0\, r/n_g$ (the Bayes risk under an isotropic $N(0, \tau^2 I_r)$ prior
-tends to $c_0 r/n_g$ as $\tau \to \infty$ and lower-bounds the minimax
-risk; equivalently the Cram\'er--Rao bound with diagonal Fisher
-information $n_g/c_0$ per coordinate, \citealp{vandervaart1998asymptotic}).
+floor $\ge \sigma_0^2 = (1 - \mathrm{gap}^2)/\beta_{\max} > 0$ and $n_g$
+samples inside the problem, so its minimax risk lower-bounds the full
+risk. The minimax L2 squared risk of the $r$-dimensional Gaussian
+location model is $\inf_{\hat{\bm{a}}}\sup_{\bm{a}} \E\|\hat{\bm{a}} -
+\bm{a}\|_2^2 \ge \sigma_0^2\, r/n_g$ (the Bayes risk under an isotropic
+$N(0, \tau^2 I_r)$ prior tends to $\sigma_0^2 r/n_g$ as $\tau \to \infty$
+and lower-bounds the minimax risk; equivalently the Cram\'er--Rao bound
+with diagonal Fisher information $n_g/\sigma_0^2$ per coordinate,
+\citealp{vandervaart1998asymptotic}).
 This is information-theoretic, hence binds every estimator, not just the
-hybrid one. Forcing the supremum risk below $(c_0\,\mathrm{gap})^2$
-requires $n_g \ge (c_0/c_0^2)\, r/\mathrm{gap}^2$, which is
+hybrid one. Forcing the supremum risk below $(c_{\mathrm{tol}}\,\mathrm{gap})^2$
+requires $n_g \ge (\sigma_0^2/c_{\mathrm{tol}}^2)\, r/\mathrm{gap}^2$, which is
 \eqref{eq:goldset-lower}. Together with the upper bound the gold-set
 sample complexity for total recovery is $\Theta(r/\mathrm{gap}^2)$.
 
@@ -214,7 +215,7 @@ $\Theta(r/\mathrm{gap}^2)$ of \cref{thm:goldset}.
 The gold-set sample complexity differs by success criterion, and each
 rate is tight for its own loss; they are rates for different losses, not
 competing bounds on one quantity. For \emph{total} (L2) model recovery,
-$\|\hat{\bm{a}} - \bm{a}\|_2 \le c_0\,\mathrm{gap}$, the rate is
+$\|\hat{\bm{a}} - \bm{a}\|_2 \le c_{\mathrm{tol}}\,\mathrm{gap}$, the rate is
 $\Theta(r/\mathrm{gap}^2)$ (\cref{thm:goldset}): the trace bound
 \eqref{eq:trace-bound} makes the error linear in $r$ and the Gaussian
 location minimax bound \eqref{eq:goldset-lower} shows no estimator does
@@ -232,7 +233,7 @@ the $\Theta(\log r/\mathrm{gap}^2)$ rate; the matching lower bound is
 the maximum of $r$ sub-Gaussian coordinates, $\sim \sqrt{2\log r}$, so
 the union bound is tight for the $L_\infty$ loss rather than loose. For
 \emph{per-coordinate} root-mean-square control, $\|\hat{\bm{a}} -
-\bm{a}\|_2/\sqrt{r} \le c_0\,\mathrm{gap}$, the $r$ in the trace bound
+\bm{a}\|_2/\sqrt{r} \le c_{\mathrm{tol}}\,\mathrm{gap}$, the $r$ in the trace bound
 cancels the $\sqrt{r}$ normalization and the rate is
 $\Theta(1/\mathrm{gap}^2)$, independent of $r$. The volume heuristic
 sometimes offered for the linear-$r$ rate (competing-solution volume
@@ -315,9 +316,11 @@ literature: the conditionally independent corner ($r = 0$) is the
 regime of data programming and the triplet method, the gold-free
 identifiability-up-to-swapping result is \citet{yu2022nplm}, and the
 $\Theta(r/\mathrm{gap}^2)$ bound prices the gold data that restores a
-correlated ensemble. The two factors carry different evidentiary
-weight: the $1/\mathrm{gap}^2$ factor is both proved
+correlated ensemble. Both factors are proved
 (\cref{thm:goldset}) and confirmed in simulation
-(\cref{sec:validation}), whereas the linear-in-$r$ rate is proved here
-but not yet validated by an $r$-sweep, which the longer manuscript
-supplies \citep{towell2026weaksupcoarseningextended}.
+(\cref{sec:validation}): the gap sweep recovers the $1/\mathrm{gap}^2$
+factor (log--log slope $-2.04$) and the $r$-sweep recovers the
+linear-in-$r$ rate for total model recovery (log--log slope $1.17$,
+tracking the trace-bound theory line), together with the
+$\log r$ and $r$-independent rates that \cref{rmk:r-dependence} assigns
+to the weaker per-direction and per-coordinate criteria.

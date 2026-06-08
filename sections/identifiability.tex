@@ -111,7 +111,11 @@ all vote,
 where $a_j = \E[\sigma_j Z] = 2\alpha_j - 1$ is the LF's
 \emph{accuracy margin} (its centered accuracy). Equation
 \eqref{eq:id-triplet} is the moment structure exploited by the
-triplet method of \citet{fu2020fast}. From three LFs, the three
+triplet method of \citet{fu2020fast}; the identifiability it delivers
+is a special case of the general latent-structure identifiability
+theorem of \citet{allman2009identifiability}, built on
+\citeauthor{kruskal1977three}'s uniqueness result for trilinear
+decompositions \citep{kruskal1977three}. From three LFs, the three
 pairwise products and the one triple product give
 \begin{equation}
   a_j^2 = \frac{\E[\sigma_j \sigma_k]\,\E[\sigma_j \sigma_\ell]}

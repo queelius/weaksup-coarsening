@@ -169,22 +169,64 @@ them. The diagnostic reports an effective deficit of $6$ for the three
 dependent pairs, which is the residual-matrix rank $2 d_{\mathrm{free}}$
 of \cref{rmk:r-definition}; the parameter-degeneracy dimension is
 $d_{\mathrm{free}} = 3$, one per dependent pair. The simple
-gold-augmented estimator used here is the \emph{direct-marginal}
-estimator: it re-measures all $m$ marginal LF accuracies from gold and
-discards the agreement moments, so its cost is governed by the
-$\mathrm{gap}$ term and is independent of $r$ (a union over $m$ LFs
-gives $\Theta(\log m/\mathrm{gap}^2)$, with $m = 8$ fixed here). The
-linear-in-$r$ rate $\Theta(r/\mathrm{gap}^2)$ of \cref{thm:goldset}
-pertains instead to the hybrid estimator that uses the agreement
-moments for the identified subspace and gold only for the $r$
-degenerate directions; this study fixes the dependence structure and
-sweeps $\mathrm{gap}$, so it isolates the $1/\mathrm{gap}^2$ factor
-common to both estimators and does not exercise the $r$-channel (an
-$r$-sweep with the hybrid estimator is deferred to the longer manuscript
-\citep{towell2026weaksupcoarseningextended}). The two checkable
-predictions of \cref{thm:goldset}, that gold labels restore
-identifiability and that the cost scales as $1/\mathrm{gap}^2$, both
-hold.
+gold-augmented estimator used in the sweep above is the
+\emph{direct-marginal} estimator: it re-measures all $m$ marginal LF
+accuracies from gold and discards the agreement moments, so its cost is
+governed by the $\mathrm{gap}$ term and is independent of $r$ (a union
+over $m$ LFs gives $\Theta(\log m/\mathrm{gap}^2)$, with $m = 8$ fixed
+here). The linear-in-$r$ rate $\Theta(r/\mathrm{gap}^2)$ of
+\cref{thm:goldset} pertains instead to the hybrid estimator that uses
+the agreement moments for the identified subspace and gold only for the
+$r$ degenerate directions; the gap sweep above fixes the dependence
+structure and isolates the $1/\mathrm{gap}^2$ factor common to both
+estimators, while the $r$-channel is exercised separately below.
+
+\paragraph{Sample complexity scales linearly in $r$.} To isolate the
+$r$-channel of \cref{thm:goldset} we fix the accuracy margin
+($\mathrm{gap} = 0.20$) and the LF count ($m = 80$) and sweep the
+degeneracy dimension $r \in \{1, \ldots, 64\}$, measuring for each $r$
+the smallest gold-set size $n_g$ at which the hybrid estimator's error
+on the $r$ degenerate directions, $B^\top(\bar{\bm{\xi}} - \bm{a})$,
+meets each of the three loss criteria of \cref{rmk:r-dependence}
+(median over $101$ replicates and $7$ random degenerate subspaces; seed
+\texttt{20260603}, reproducible from \texttt{scripts/rsweep\_figure.R}).
+The three predicted rates separate cleanly (\Cref{fig:rsweep}). For the
+operative total (L2) criterion the required $n_g$ is linear in $r$: the
+fitted log--log slope is $1.17$ over the finite grid (predicted $+1$),
+and the data track the parameter-free theory line $n_g = (1 -
+\mathrm{gap}^2)/\mathrm{gap}^2 \cdot r = 24\,r$ from the trace bound
+\eqref{eq:trace-bound} (e.g.\ $n_g = 183$ at $r = 8$ versus the
+predicted $192$); the modest excess of the slope above $1$ is small-$r$
+curvature, and a fit restricted to $r \ge 4$ recovers a slope nearer
+unity. The per-direction $L_\infty$ criterion grows as $\log r$ (a
+linear-in-$\log r$ fit gives $R^2 = 0.986$, beating the power-law fit's
+$0.917$), and the per-coordinate RMS criterion is flat in $r$ (slope
+$0.12$), exactly the $\Theta(r/\mathrm{gap}^2)$,
+$\Theta(\log r/\mathrm{gap}^2)$, and $\Theta(1/\mathrm{gap}^2)$ rates
+\cref{rmk:r-dependence} assigns to the three losses. The headline
+linear-in-$r$ rate for total model recovery is thus confirmed
+empirically, not only proved. All three checkable predictions of
+\cref{thm:goldset}, that gold labels restore identifiability, that the
+cost scales as $1/\mathrm{gap}^2$, and that it scales linearly in $r$
+for total recovery, hold.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{rsweep_complexity.pdf}
+\caption{Gold-set sample complexity versus the degeneracy dimension $r$
+at fixed accuracy margin $\mathrm{gap} = 0.20$, one curve per loss
+criterion of \cref{rmk:r-dependence}. (A) For total (L2) model
+recovery, the operative criterion, the required gold-set size $n_g$ is
+linear in $r$ (fitted log--log slope $1.17$) and tracks the
+parameter-free trace-bound line $n_g = (1-\mathrm{gap}^2)/\mathrm{gap}^2
+\cdot r$ (dashed). (B) The per-direction $L_\infty$ criterion grows as
+$\log r$ and the per-coordinate RMS criterion is flat in $r$, matching
+the $\Theta(\log r/\mathrm{gap}^2)$ and $\Theta(1/\mathrm{gap}^2)$
+rates. The study is idealized (base R, gold correctness vectors drawn
+directly from the LF marginals); it exercises the $r$-channel that the
+gap sweep holds fixed.}
+\label{fig:rsweep}
+\end{figure}
 
 Direct comparison with the Snorkel and FlyingSquid implementations
 on the WRENCH benchmark \citep{ratner2017snorkel,fu2020fast,

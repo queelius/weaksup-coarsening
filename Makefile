@@ -4,7 +4,7 @@ PAPER = main
 
 paper: $(PAPER).pdf
 
-$(PAPER).pdf: $(PAPER).tex sections/*.tex refs.bib
+$(PAPER).pdf: $(PAPER).tex sections/*.tex refs.bib figures/rsweep_complexity.pdf
 	pdflatex $(PAPER).tex
 	bibtex $(PAPER)
 	pdflatex $(PAPER).tex
@@ -16,10 +16,16 @@ sim: results.rds
 results.rds: scripts/sim.R scripts/run.R
 	Rscript scripts/run.R
 
-figures: figures/identifiability_recovery.pdf figures/goldset_complexity.pdf
+figures: figures/identifiability_recovery.pdf figures/goldset_complexity.pdf \
+         figures/rsweep_complexity.pdf
 
 figures/identifiability_recovery.pdf figures/goldset_complexity.pdf: scripts/figures.R results.rds
 	Rscript scripts/figures.R
+
+# Idealized r-sweep validating the linear-in-r rate of T4. Self-contained
+# (base R, no external data): runs the sweep and writes the figure directly.
+figures/rsweep_complexity.pdf: scripts/rsweep_figure.R
+	Rscript scripts/rsweep_figure.R
 
 validation: results.rds figures
 
