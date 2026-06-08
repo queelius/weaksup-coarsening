@@ -68,10 +68,16 @@ the full apparatus, including regularity conditions, is in
 glass-ceiling phenomenon: an estimator that uses only LF votes cannot
 orient the label model. It is the same structural obstruction that
 \citet{towell2026scrnacoarsening} identify for scRNA-seq zeros, here
-made fully explicit as a label-flip symmetry. A single gold-labeled
-example breaks the symmetry: it is a singleton candidate set whose
-known label fixes the orientation, adding an identifying row to the
-augmented candidate-set matrix of \cref{thm:bg-id}. The
+made fully explicit as a label-flip symmetry. The same obstruction
+appears in the partial-labeler model of \citet{yu2022nplm}, who prove
+gold-free identifiability only up to label swapping; \cref{eq:id-jointvote}
+exhibits the binary witness of that swap symmetry in closed form and
+ties the residual ambiguity to a rank deficit of the augmented
+candidate-set matrix rather than leaving it as a generic permutation
+caveat. A single gold-labeled example breaks the symmetry: it is a
+singleton candidate set whose known label fixes the orientation,
+adding an identifying row to the augmented candidate-set matrix of
+\cref{thm:bg-id}. The
 better-than-random assumption is the cost-free alternative when it is
 credible; the next theorem shows what conditional independence buys
 without any gold data.

@@ -309,7 +309,15 @@ the gap $\mathrm{gap}$ together set the price.
   budget $n_g$, which is linear in $\hat r$ for total recovery.
 \end{enumerate}
 
-The genuinely new content relative to data programming and the
-triplet method is this dependent-case budget: prior work establishes
-the $r = 0$ corner, and the framework extends it to the correlated
-ensembles that practice actually produces.
+This dependent-case budget is the load-bearing external contribution
+of the paper relative to the candidate-set and weak-supervision
+literature: the conditionally independent corner ($r = 0$) is the
+regime of data programming and the triplet method, the gold-free
+identifiability-up-to-swapping result is \citet{yu2022nplm}, and the
+$\Theta(r/\mathrm{gap}^2)$ bound prices the gold data that restores a
+correlated ensemble. The two factors carry different evidentiary
+weight: the $1/\mathrm{gap}^2$ factor is both proved
+(\cref{thm:goldset}) and confirmed in simulation
+(\cref{sec:validation}), whereas the linear-in-$r$ rate is proved here
+but not yet validated by an $r$-sweep, which the longer manuscript
+supplies \citep{towell2026weaksupcoarseningextended}.

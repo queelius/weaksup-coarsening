@@ -6,9 +6,9 @@ base-R simulation runs and `validation.tex` reports its actual
 numbers.
 
 This is the fourth paper in the masked-cause framework series, after
-`~/github/papers/masked-causes-in-series-systems/` (foundational),
-`~/github/papers/scrna-coarsening/` (first application), and
-`~/github/papers/spatial-coarsening/` (second application, and the
+`~/github/coarsening/papers/masked-causes-in-series-systems/` (foundational),
+`~/github/coarsening/papers/scrna-coarsening/` (first application), and
+`~/github/coarsening/papers/spatial-coarsening/` (second application, and the
 structural template for this repo).
 
 ---
@@ -153,9 +153,9 @@ or a venue with a slightly higher limit fits it.
 
 ## 4. Companion repos and the citation pattern
 
-`~/github/papers/spatial-coarsening/` is the structural template:
+`~/github/coarsening/papers/spatial-coarsening/` is the structural template:
 same preamble, same Makefile targets, same 8-section breakdown, same
-README/CLAUDE/HANDOFF format. `~/github/papers/scrna-coarsening/` is
+README/CLAUDE/HANDOFF format. `~/github/coarsening/papers/scrna-coarsening/` is
 the prose-voice reference (how C1/C2/C3 are framed, how the
 glass-ceiling and cell-total-consistency theorems are written).
 
@@ -206,7 +206,7 @@ expansion must preserve this framing.
 
 ```bash
 # Build the paper
-cd ~/github/papers/weaksup-coarsening
+cd ~/github/coarsening/papers/weaksup-coarsening
 make paper
 
 # Run the simulation

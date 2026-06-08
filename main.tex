@@ -94,16 +94,20 @@ the accuracy margin, for restoring identifiability when LFs are
 correlated.
 
 A base-R simulation confirms each theorem; the dependent-case bound
-is the genuinely new quantitative result, and the empirical
+is the load-bearing external contribution, and the empirical
 $\log$--$\log$ slope of $-2.04$ for the gold-set size against the
-accuracy margin matches the predicted $1/\mathrm{gap}^2$ scaling.
-The framework casts the C1--C2--C3 coarsening conditions of
+accuracy margin matches the predicted $1/\mathrm{gap}^2$ factor (the
+simulation isolates this gap factor; the linear-in-$r$ rate is proved
+but not yet exercised by an $r$-sweep). The framework casts the
+C1--C2--C3 coarsening conditions of
 Heitjan--Rubin and Gill--van der Laan--Robins as a classification of
-LF ensembles, and gives the precise conditions under which a
+LF ensembles, and states, in coarsening-at-random terms, when a
 gold-free weak-supervision pipeline is identifiable. Dawid--Skene
-(1979) is the clear ancestor of label-model identifiability, and
+(1979) is the clear ancestor of label-model identifiability,
 moment-based identifiability under conditional independence is
-established prior work; the contribution here is the masked-cause
+established prior work, and the candidate-subset view with gold-free
+identifiability up to label swapping is due to Yu, Ding, and Bach
+(2022); the contribution here is the masked-cause
 unification, the C1--C2--C3 classification, the explicit
 glass-ceiling construction, and the gold-set sample-complexity
 theorem for the dependent case.

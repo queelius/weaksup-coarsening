@@ -29,9 +29,14 @@ closed form in third-order agreement moments; the multi-task
 extension \citep{ratner2019training,ratner2020training} handled
 structured dependence with a known dependency graph;
 \citet{bach2017learning} showed the dependency structure can
-sometimes be learned, but only under restrictive conditions.
+sometimes be learned, but only under restrictive conditions, and
+\citet{varma2019dependency} learned it via a robust-PCA estimator
+whose unlabeled-data cost can scale sublinearly in the number of LFs.
 \Cref{thm:ci-identifiability} is a re-derivation of this body of
-results, not a new identifiability claim. The crowdsourcing
+results, not a new identifiability claim; our dependent-case result
+(\cref{thm:goldset}) is complementary to \citet{varma2019dependency},
+pricing the gold data that restores the model once the dependence is
+known rather than recovering the dependence graph from unlabeled votes. The crowdsourcing
 literature \citep{karger2011iterative,zhang2016spectral} solved the
 same estimation problem for human annotators; the spectral and
 tensor-decomposition tools \citep{anandkumar2014tensor} use the
@@ -43,6 +48,24 @@ supervision to multi-task, deployment, sequential, and interactive
 \citep{boecking2021interactive} settings; the masked-cause framework
 applies to each, because all share the LF-vote-matrix input.
 
+\paragraph{Partial-label learning is the candidate-set sibling.} The
+closest external precedent for the candidate-set view is
+\citet{yu2022nplm}, who let LFs emit candidate-label subsets, fit a
+gold-free generative label model, and establish identifiability up to
+label swapping; our \cref{thm:glass-ceiling} is the same obstruction
+made into an explicit binary label-flip witness, and our
+\cref{thm:goldset} adds the dependent-case gold budget. The
+partial-label and superset-label learning literatures
+\citep{cour2011partial,liu2014superset,cabannes2020infimum,
+cidsueiro2012proper} study learning a classifier from a given
+candidate set, characterizing learnability through the ambiguity
+degree, superset-ERM sample complexity, infimum-loss consistency
+rates, and mixing-matrix admissibility; the masked-cause framing
+differs by making the candidate set the output of a coarsening
+mechanism whose parameters are themselves the inferential target, so
+that the C1--C2--C3 conditions, not an ambiguity-degree assumption on
+fixed sets, control identifiability.
+
 \paragraph{What this paper adds.} The contribution is narrower than
 ``label-model identifiability'' and is fourfold. (i) The masked-cause
 unification: LF votes are a candidate-set coarsening, abstention is a
@@ -53,15 +76,19 @@ same frame as the other applications of the masked-cause framework
 ensembles: the three coarsening-at-random conditions become checkable
 statements about an LF set (support, label-only error dependence,
 parameter separation). (iii) The explicit glass-ceiling construction:
-the accuracy-complement symmetry of \cref{thm:glass-ceiling} is a
-precise statement, with an exact label-flip witness, of why gold-free
-estimation cannot orient the model. (iv) The gold-set
+\citet{yu2022nplm} establish gold-free identifiability only up to
+label swapping for candidate-subset labelers, and the
+accuracy-complement symmetry of \cref{thm:glass-ceiling} sharpens that
+to an exact binary label-flip witness in closed form, tied to a rank
+deficit of the augmented candidate-set matrix. (iv) The gold-set
 sample-complexity theorem for the dependent case
 (\cref{thm:goldset}): prior work establishes the conditionally
-independent corner ($r = 0$); the $\Theta(r / \mathrm{gap}^2)$ bound
-for total model recovery extends it to the correlated ensembles that
-practice produces, and the $1/\mathrm{gap}^2$ scaling is confirmed in
-simulation. We do not
+independent corner ($r = 0$), and \citet{yu2022nplm} do not price the
+gold data the dependent case needs; the $\Theta(r / \mathrm{gap}^2)$
+bound for total model recovery covers the correlated ensembles that
+practice produces, with the $1/\mathrm{gap}^2$ factor confirmed in
+simulation (the linear-in-$r$ rate is proved but awaits an $r$-sweep).
+We do not
 claim to invent label-model identifiability; we claim a unifying
 frame, a classification, and a sample-complexity result for the
 dependent case.

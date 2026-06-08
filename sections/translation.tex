@@ -40,6 +40,25 @@ soft-coarsening relaxation of this combinatorial picture: instead of
 a hard candidate set, each example carries a distribution over
 $\{0,1\}$ determined by the LF votes and the accuracy parameters.
 
+This candidate-set reading of weak supervision is itself the subject
+of an established line of work, which we connect to rather than
+introduce. \citet{yu2022nplm} make LFs emit candidate-label subsets
+explicitly and aggregate them with a gold-free generative model; the
+partial-label and superset-label learning literatures study learning
+a classifier when each example carries a candidate set known to
+contain the truth, with the learnability boundary controlled by an
+\emph{ambiguity degree} \citep{cour2011partial}, sample-complexity
+conditions for empirical-risk minimization on supersets
+\citep{liu2014superset}, consistent disambiguation losses with proved
+rates \citep{cabannes2020infimum}, and a mixing-matrix admissibility
+condition for proper losses on partial labels
+\citep{cidsueiro2012proper}. Those works fix the candidate set as
+given supervision and study how to learn from it; we instead treat the
+candidate set as the \emph{output} of a coarsening mechanism whose
+own parameters (LF accuracies, prior) must be identified, and read
+the C1--C2--C3 conditions as the admissibility statement on that
+mechanism.
+
 \subsection{The translation}
 
 \Cref{tab:translation} states the explicit correspondence to

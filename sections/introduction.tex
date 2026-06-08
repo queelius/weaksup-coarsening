@@ -29,9 +29,17 @@ method of \citet{fu2020fast} proved that LF accuracies are
 identifiable from agreement moments when the LFs are conditionally
 independent given the label. \citet{ratner2019training} extended the
 moment approach to structured dependence with a known dependency
-graph. What has been missing is a single inferential frame that says
-\emph{which} LF ensembles are identifiable, what auxiliary
-information rescues the rest, and at what cost.
+graph. Closest to the present setting, \citet{yu2022nplm} let LFs emit
+\emph{subsets} of candidate labels, fit a gold-free generative label
+model over those subsets, and prove it is identifiable up to label
+swapping under mild conditions; our work recovers their candidate-set
+view and their label-swap obstruction (our \cref{sec:translation} and
+\cref{thm:glass-ceiling}) as the weak-supervision instance of the
+reliability-theoretic coarsening framework, and adds the
+dependent-case gold-set sample-complexity analysis they do not treat.
+What this body of work has not assembled is a single inferential frame
+that classifies \emph{which} LF ensembles are identifiable, names the
+auxiliary information that rescues the rest, and prices it.
 
 \subsection{The bridge to masked-cause inference}
 

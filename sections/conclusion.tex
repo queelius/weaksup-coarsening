@@ -26,12 +26,15 @@ the agreement residual is Monte-Carlo noise, and the gold-set
 requirement scales as $1/\mathrm{gap}^2$ with fitted log--log slope
 $-2.04$.
 
-Dawid--Skene (1979) is the clear ancestor of the label model, and
+Dawid--Skene (1979) is the clear ancestor of the label model,
 moment-based identifiability for conditionally independent LFs is
-established prior work; the contribution here is the masked-cause
+established prior work, and the candidate-subset view with gold-free
+identifiability up to label swapping is due to \citet{yu2022nplm}; the
+contribution here is the masked-cause
 unification, the C1--C2--C3 classification of LF ensembles, the
 explicit glass-ceiling construction, and the sample-complexity result
-for the dependent case. The framework gives a practitioner a
+for the dependent case, of which the $1/\mathrm{gap}^2$ factor is the
+part the present simulation validates. The framework gives a practitioner a
 diagnostic: a gold-free pipeline is sound when the LF ensemble
 satisfies the coarsening-at-random conditions, and the gold budget
 needed otherwise is set by the rank deficit and the accuracy margin.
