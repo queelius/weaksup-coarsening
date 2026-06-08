@@ -77,6 +77,8 @@ The simulation is base R only (no external packages).
 
 ## Status
 
+**Reviewed 2026-06-08 (papermill multi-agent): minor-revision.** No critical issues; all four theorems are sound and reproduce. Top remaining item: port the already-reproducing r-sweep panel (in .research/) into validation.tex as a figure of sample size versus the rank-deficit dimension r.
+
 Initial scaffold (May 2026). All sections have substantive content.
 The simulation runs and `validation.tex` reports its actual numbers.
 Theorem proofs are sketches that cite the framework series for shared

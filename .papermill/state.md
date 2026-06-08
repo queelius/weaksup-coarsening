@@ -165,6 +165,24 @@ review_history:
       - "I6: interior MLE defined parenthetically in T3"
     polish_done:
       - "P2: augmented candidate-set matrix added to translation table"
+  - review_id: 2026-05-23
+    type: per-specialist pass (logic, methodology, prose, novelty, citation, format, literature); no unified review.md synthesized this round
+    verdict: not-synthesized (per-specialist artifacts only)
+  - review_id: 2026-06-04
+    type: multi-agent editorial (logic, methodology, prose, novelty, citation, format, literature)
+    verdict: minor-revision
+    counts: { critical: 0, major: 2, minor: 6, suggestions: 4 }
+    majors: ["M1 linear-in-r rate proved but not validated in-paper", "M2 length vs 12-page target"]
+  - review_id: 2026-06-08
+    type: multi-agent editorial (logic, methodology, prose, novelty, citation, format, literature); lenses executed directly (Task sub-agent tool unavailable)
+    verdict: minor-revision
+    counts: { critical: 0, major: 2, minor: 6, suggestions: 4 }
+    build: "clean; make paper exit 0; 0 undefined refs/citations (repo grep convention); 22 pages; 2 cosmetic overfull hboxes"
+    reproduced: "all validation.tex numbers match results.rds (gap slope -2.0438); T1 symmetry exact (243-pattern max diff 0); T4 KL=L2 quadratic verified (ratio 1.003); deferred r-sweep idealized2.R executed (L2 slope 1.17, Linf ~ log r, RMS flat)"
+    majors: ["M1 headline linear-in-r rate unvalidated in-paper, but confirming r-sweep now demonstrably exists in .research/attempts/003-rsweep-idealized and reproduces; fix is a one-panel port", "M2 22-page build vs header 12-page target; venue decision, header inconsistent with state shortlist"]
+    single_most_important_item: "Port one panel of .research/attempts/003-rsweep-idealized/idealized2.R into validation.tex as a figure of n_g vs r at fixed gap, to validate the headline linear-in-r L2 rate in-paper instead of deferring it to a not-yet-existent extended manuscript."
+    persisting_unfixed: ["m1 c_0 overload in T4 proof", "m2 missing Allman-Matias-Rhodes 2009 behind T2", "m3 loose eigenvalue floor", "m4 finite-corpus assumption not stated in T4", "m5 two cosmetic overfull boxes", "m6 four uncited bib entries + bibtex field warnings"]
+    review_dir: .papermill/reviews/2026-06-08/
 build:
   paper_command: "make paper"
   simulation_command: "Rscript scripts/run.R"
